@@ -9,7 +9,7 @@ local function add_default_keymaps()
         vim.api.nvim_set_keymap('n', keys, cmd, { noremap = true, silent = true, desc = desc })
     end
 
-    add_keymap('<leader>sf', ':Seeker<CR>', 'Seeker: Start file investigation')
+    add_keymap('<leader>ff', ':Seeker<CR>', 'Seek Files')
 end
 
 ---Main command handler

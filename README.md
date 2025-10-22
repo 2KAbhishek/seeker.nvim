@@ -73,9 +73,9 @@ Built on top of [snacks.nvim](https://github.com/folke/snacks.nvim) picker, seek
 
 1. **Start Seeker**: Run `:Seeker` or press `<leader>sf`
 2. **Filter Files**: Type to filter files by name (standard file picker behavior)
-3. **Switch to Grep**: Press `<C-,>` to search within the filtered files
+3. **Switch to Grep**: Press `<C-e>` to search within the filtered files
 4. **Search Content**: Type to search for content within those files
-5. **Refine Files**: Press `<C-,>` again to see only files with matches
+5. **Refine Files**: Press `<C-e>` again to see only files with matches
 6. **Continue Refining**: Keep switching between modes to progressively narrow results
 
 ### Multi-Selection
@@ -90,14 +90,10 @@ seeker.nvim can be configured using the following options:
 
 ```lua
 require('seeker').setup({
-    picker_type = 'git_files',  -- 'git_files' or 'files' (auto-detect if nil)
-    toggle_key = '<C-,>',        -- Key to toggle between modes
+    picker_type = 'git_files',   -- 'git_files' or 'files' (auto-detect if nil)
+    toggle_key = '<C-e>',        -- Key to toggle between modes
     use_git_files = nil,         -- Auto-detect git repo (true/false to override)
-    picker_opts = {              -- Options passed to snacks.picker
-        layout = {
-            preset = 'ivy',      -- or 'default', 'vertical', etc.
-        },
-    },
+    picker_opts = {},            -- Options passed to snacks.picker
     notifications = true,        -- Show mode switch notifications
     add_default_keybindings = true,  -- Add <leader>sf keybinding
 })
@@ -109,12 +105,11 @@ require('seeker').setup({
 
 ### Keybindings
 
-| Keybinding   | Mode              | Description                  |
-| ------------ | ----------------- | ---------------------------- |
-| `<leader>sf` | Normal            | Start Seeker                 |
-| `<C-,>`      | File Picker (n/i) | Toggle to Grep mode          |
-| `<C-,>`      | Grep Picker (n/i) | Toggle to File mode          |
-| `<Tab>`      | Picker (n/i)      | Select/deselect current item |
+| Keybinding   | Mode              | Description             |
+| ------------ | ----------------- | ----------------------- |
+| `<leader>ff` | Normal            | Start Seeker            |
+| `<C-e>`      | File Picker (n/i) | Toggle Grep / File mode |
+| `<Tab>`      | Picker (n/i)      | Multi Selection         |
 
 > You can customize the toggle key and disable default keybindings in the config.
 
@@ -180,12 +175,6 @@ I frequently needed to investigate codebases by filtering files, then searching 
 - Handling multiple path formats (string vs table items)
 - Progressive refinement without losing context
 
-### 🔍 Related Projects
-
-- [snacks.nvim](https://github.com/folke/snacks.nvim) - The picker foundation
-- [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) - Alternative fuzzy finder
-- [fzf-lua](https://github.com/ibhagwan/fzf-lua) - Lua fzf implementation
-
 ## 🧰 Tooling
 
 - [dots2k](https://github.com/2kabhishek/dots2k) — Dev Environment
@@ -193,8 +182,9 @@ I frequently needed to investigate codebases by filtering files, then searching 
 - [sway2k](https://github.com/2kabhishek/sway2k) — Desktop Environment
 - [qute2k](https://github.com/2kabhishek/qute2k) — Personalized Browser
 
-### 🔍 More Info
+### 🔍 More Plugins
 
+- [pickme.nvim](https://github.com/2kabhishek/nerdy.nvim) — One picker to rule them all
 - [nerdy.nvim](https://github.com/2kabhishek/nerdy.nvim) — Find nerd glyphs easily
 - [tdo.nvim](https://github.com/2KAbhishek/tdo.nvim) — Fast and simple notes in Neovim
 - [termim.nvim](https://github.com/2kabhishek/termim.nvim) — Neovim terminal improved

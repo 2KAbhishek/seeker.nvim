@@ -3,7 +3,7 @@ local M = {}
 
 ---@class SeekerConfigOptions
 ---@field picker_type string? 'git_files' or 'files' (auto-detect if not specified)
----@field toggle_key string? Key to toggle between file and grep mode (default: '<C-,>')
+---@field toggle_key string? Key to toggle between file and grep mode (default: '<C-e>')
 ---@field use_git_files boolean? Whether to use git_files (auto-detect if nil)
 ---@field picker_opts table? Options passed to snacks.picker
 ---@field notifications boolean? Show notifications on mode switch (default: true)
@@ -12,13 +12,9 @@ local M = {}
 ---@type SeekerConfigOptions
 local config = {
     picker_type = nil,
-    toggle_key = '<C-,>',
+    toggle_key = '<C-e>',
     use_git_files = nil,
-    picker_opts = {
-        layout = {
-            preset = 'ivy',
-        },
-    },
+    picker_opts = {},
     notifications = true,
     add_default_keybindings = true,
 }
