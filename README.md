@@ -1,36 +1,36 @@
 <div align = "center">
 
-<h1><a href="https://github.com/2kabhishek/template.nvim">template.nvim</a></h1>
+<h1><a href="https://github.com/2kabhishek/seeker.nvim">seeker.nvim</a></h1>
 
-<a href="https://github.com/2KAbhishek/template.nvim/blob/main/LICENSE">
-<img alt="License" src="https://img.shields.io/github/license/2kabhishek/template.nvim?style=flat&color=eee&label="> </a>
+<a href="https://github.com/2KAbhishek/seeker.nvim/blob/main/LICENSE">
+<img alt="License" src="https://img.shields.io/github/license/2kabhishek/seeker.nvim?style=flat&color=eee&label="> </a>
 
-<a href="https://github.com/2KAbhishek/template.nvim/graphs/contributors">
-<img alt="People" src="https://img.shields.io/github/contributors/2kabhishek/template.nvim?style=flat&color=ffaaf2&label=People"> </a>
+<a href="https://github.com/2KAbhishek/seeker.nvim/graphs/contributors">
+<img alt="People" src="https://img.shields.io/github/contributors/2kabhishek/seeker.nvim?style=flat&color=ffaaf2&label=People"> </a>
 
-<a href="https://github.com/2KAbhishek/template.nvim/stargazers">
-<img alt="Stars" src="https://img.shields.io/github/stars/2kabhishek/template.nvim?style=flat&color=98c379&label=Stars"></a>
+<a href="https://github.com/2KAbhishek/seeker.nvim/stargazers">
+<img alt="Stars" src="https://img.shields.io/github/stars/2kabhishek/seeker.nvim?style=flat&color=98c379&label=Stars"></a>
 
-<a href="https://github.com/2KAbhishek/template.nvim/network/members">
-<img alt="Forks" src="https://img.shields.io/github/forks/2kabhishek/template.nvim?style=flat&color=66a8e0&label=Forks"> </a>
+<a href="https://github.com/2KAbhishek/seeker.nvim/network/members">
+<img alt="Forks" src="https://img.shields.io/github/forks/2kabhishek/seeker.nvim?style=flat&color=66a8e0&label=Forks"> </a>
 
-<a href="https://github.com/2KAbhishek/template.nvim/watchers">
-<img alt="Watches" src="https://img.shields.io/github/watchers/2kabhishek/template.nvim?style=flat&color=f5d08b&label=Watches"> </a>
+<a href="https://github.com/2KAbhishek/seeker.nvim/watchers">
+<img alt="Watches" src="https://img.shields.io/github/watchers/2kabhishek/seeker.nvim?style=flat&color=f5d08b&label=Watches"> </a>
 
-<a href="https://github.com/2KAbhishek/template.nvim/pulse">
-<img alt="Last Updated" src="https://img.shields.io/github/last-commit/2kabhishek/template.nvim?style=flat&color=e06c75&label="> </a>
+<a href="https://github.com/2KAbhishek/seeker.nvim/pulse">
+<img alt="Last Updated" src="https://img.shields.io/github/last-commit/2kabhishek/seeker.nvim?style=flat&color=e06c75&label="> </a>
 
 <h3>Ready to go Neovim template 🏗️✈️</h3>
 
 <figure>
-  <img src="doc/images/screenshot.png" alt="template.nvim in action">
+  <img src="doc/images/screenshot.png" alt="seeker.nvim in action">
   <br/>
-  <figcaption>template.nvim in action</figcaption>
+  <figcaption>seeker.nvim in action</figcaption>
 </figure>
 
 </div>
 
-template.nvim is a neovim plugin that allows neovim users to `<action>`.
+seeker.nvim is a neovim plugin that allows neovim users to `<action>`.
 
 ## ✨ Features
 
@@ -54,19 +54,19 @@ template.nvim is a neovim plugin that allows neovim users to `<action>`.
 ```lua
 -- Lazy
 {
-    '2kabhishek/template.nvim',
+    '2kabhishek/seeker.nvim',
     cmd = { 'Template' },
     keys = { '<leader>th', '<leader>tH', },
     -- Add your custom configs here, keep it blank for default configs (required)
     opts = {},
     -- Use this for local development
-    -- dir = '~/path-to/template.nvim',
+    -- dir = '~/path-to/seeker.nvim',
 },
 ```
 
 ## 🚀 Usage
 
-1. Fork the `template.nvim` repo
+1. Fork the `seeker.nvim` repo
 2. Update the plugin name, file names etc, change `template` to `your-plugin-name`
 3. Add the code required for your plugin:
    - **Code entrypoint**: [template.lua](./lua/template.lua) - Main setup function
@@ -86,18 +86,18 @@ template.nvim is a neovim plugin that allows neovim users to `<action>`.
 
 ### Configuration
 
-template.nvim can be configured using the following options:
+seeker.nvim can be configured using the following options:
 
 ```lua
 template.setup({
-    name = 'template.nvim', -- Name to be greeted, 'World!' by default
+    name = 'seeker.nvim', -- Name to be greeted, 'World!' by default
     add_default_keybindings = true, -- Whether to add default keybindings
 })
 ```
 
 ### Commands
 
-`template.nvim` provides a unified command interface with tab completion:
+`seeker.nvim` provides a unified command interface with tab completion:
 
 - `Template greet [name]` - Shows a hello message with the specified name (with tab completion)
 - `Template notify [message]` - Shows a notification with custom message
@@ -131,7 +131,7 @@ Planning to add `<feature/module>`.
 
 ### 🌈 Inspiration
 
-template.nvim was inspired by [nvim-plugin-template](https://github.com/ellisonleao/nvim-plugin-template), I added some changes on top to make setting up a new plugin faster.
+seeker.nvim was inspired by [nvim-plugin-template](https://github.com/ellisonleao/nvim-plugin-template), I added some changes on top to make setting up a new plugin faster.
 
 ### 💡 Challenges/Learnings
 
@@ -159,7 +159,7 @@ template.nvim was inspired by [nvim-plugin-template](https://github.com/ellisonl
 
 <strong>⭐ hit the star button if you found this useful ⭐</strong><br>
 
-<a href="https://github.com/2KAbhishek/template.nvim">Source</a>
+<a href="https://github.com/2KAbhishek/seeker.nvim">Source</a>
 | <a href="https://2kabhishek.github.io/blog" target="_blank">Blog </a>
 | <a href="https://twitter.com/2kabhishek" target="_blank">Twitter </a>
 | <a href="https://linkedin.com/in/2kabhishek" target="_blank">LinkedIn </a>
