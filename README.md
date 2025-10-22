@@ -40,7 +40,7 @@ Built on top of [snacks.nvim](https://github.com/folke/snacks.nvim) picker, seek
 - **Seamless Mode Switching**: Toggle between file and grep modes with a single keybinding
 - **Smart File Selection**: Supports both Tab-selection and automatic filtering of visible results
 - **Git Integration**: Auto-detects git repositories and uses `git_files` for faster, gitignore-aware searches
-- **Configurable**: Customize toggle keys, notifications, picker options, and more
+- **Configurable**: Customize toggle keys, picker options, and more
 - **Zero External Dependencies**: Only requires snacks.nvim
 
 ## ⚡ Setup
@@ -58,12 +58,7 @@ Built on top of [snacks.nvim](https://github.com/folke/snacks.nvim) picker, seek
     '2kabhishek/seeker.nvim',
     dependencies = { 'folke/snacks.nvim' },
     cmd = { 'Seeker' },
-    keys = {
-        { '<leader>sf', '<cmd>Seeker<cr>', desc = 'Seeker: Start file investigation' },
-    },
-    opts = {
-        -- Add your custom configs here (optional)
-    },
+    opts = { }, -- Required unless you call seeker.setup() manually
 }
 ```
 
@@ -90,18 +85,20 @@ seeker.nvim can be configured using the following options:
 
 ```lua
 require('seeker').setup({
-    picker_type = 'git_files',   -- 'git_files' or 'files' (auto-detect if nil)
-    toggle_key = '<C-e>',        -- Key to toggle between modes
-    use_git_files = nil,         -- Auto-detect git repo (true/false to override)
-    picker_opts = {},            -- Options passed to snacks.picker
-    notifications = true,        -- Show mode switch notifications
-    add_default_keybindings = true,  -- Add <leader>sf keybinding
+    toggle_key = '<C-e>',           -- Key to toggle between modes (default)
+    picker_opts = {},               -- Options passed to snacks.picker (optional)
+    add_default_keybindings = true, -- Add <leader>ff keybinding (default)
 })
 ```
 
 ### Commands
 
-- `:Seeker` - Start seeker file investigation
+The `:Seeker` command accepts an optional mode argument with tab completion:
+
+- `:Seeker` - Auto-detect (uses git_files in git repos, files otherwise)
+- `:Seeker files` - Force files picker (all files)
+- `:Seeker git_files` - Force git_files picker (git tracked files only)
+- `:Seeker grep` - Start with grep picker directly
 
 ### Keybindings
 
