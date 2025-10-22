@@ -56,9 +56,8 @@ local function toggle_to_file(picker)
 end
 
 ---Create a file picker
----If state has grep results, show filtered file list
----Otherwise show all files (git_files or files based on config)
-M.create_file_picker = function()
+---@param mode string? 'git_files' or 'files' (auto-detect if nil)
+M.create_file_picker = function(mode)
     local config = config_module.get()
     local grep_files = state.get_grep_results()
 
@@ -99,7 +98,12 @@ M.create_file_picker = function()
         Snacks.picker.pick('files', picker_opts)
     else
         local Snacks = require('snacks')
-        if config.picker_type == 'git_files' then
+
+        if not mode then
+            mode = utils.is_git_repo() and 'git_files' or 'files'
+        end
+
+        if mode == 'git_files' then
             Snacks.picker.git_files(picker_opts)
         else
             Snacks.picker.files(picker_opts)
@@ -108,7 +112,6 @@ M.create_file_picker = function()
 end
 
 ---Create a grep picker
----Uses file list from state if available
 M.create_grep_picker = function()
     local config = config_module.get()
     local file_list = state.get_files()
@@ -143,15 +146,20 @@ M.create_grep_picker = function()
 end
 
 ---Main entry point for seeker
----@param opts table? Optional configuration
+---@param opts table? Optional configuration with mode field
 M.seek = function(opts)
+    opts = opts or {}
     state.init()
 
-    if opts then
-        config_module.setup(opts)
-    end
+    local mode = opts.mode
 
-    M.create_file_picker()
+    if mode == 'grep' then
+        M.create_grep_picker()
+    elseif mode == 'files' or mode == 'git_files' then
+        M.create_file_picker(mode)
+    else
+        M.create_file_picker()
+    end
 end
 
 return M
