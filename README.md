@@ -20,7 +20,7 @@
 <a href="https://github.com/2KAbhishek/seeker.nvim/pulse">
 <img alt="Last Updated" src="https://img.shields.io/github/last-commit/2kabhishek/seeker.nvim?style=flat&color=e06c75&label="> </a>
 
-<h3>Ready to go Neovim template 🏗️✈️</h3>
+<h3>Progressive file seeker for Neovim 🔍🎯</h3>
 
 <figure>
   <img src="doc/images/screenshot.png" alt="seeker.nvim in action">
@@ -30,115 +30,163 @@
 
 </div>
 
-seeker.nvim is a neovim plugin that allows neovim users to `<action>`.
+seeker.nvim is a Neovim plugin that enables progressive file investigation by seamlessly switching between file filtering and content searching (grep), with each switch refining your results.
+
+Built on top of [snacks.nvim](https://github.com/folke/snacks.nvim) picker, seeker provides a powerful workflow for narrowing down files by name, then searching within those files, then further refining the file list based on grep results - all without losing context.
 
 ## ✨ Features
 
-- **Modern Plugin Architecture**: Ready-to-go Neovim plugin template with best practices
-- **Unified Command System**: Modern command interface with tab completion support
-- **Type Safety**: Comprehensive type annotations using LSP-compatible `@class` and `@param`
-- **DRY Code Patterns**: Reusable helper functions and modular design
-- **CI/CD Ready**: Lint and test GitHub Actions included
-- **Auto Documentation**: GitHub Action to auto-generate vimdocs
-- **Professional README**: Complete template with modern formatting
-- **Integration Ready**: Works seamlessly with [mkrepo](https://github.com/2kabhishek/mkrepo)
+- **Progressive Refinement**: Each mode switch narrows down results (File → Grep → File progressively filters)
+- **Seamless Mode Switching**: Toggle between file and grep modes with a single keybinding
+- **Smart File Selection**: Supports both Tab-selection and automatic filtering of visible results
+- **Git Integration**: Auto-detects git repositories and uses `git_files` for faster, gitignore-aware searches
+- **Configurable**: Customize toggle keys, notifications, picker options, and more
+- **Zero External Dependencies**: Only requires snacks.nvim
 
 ## ⚡ Setup
 
 ### ⚙️ Requirements
 
-- Latest version of `neovim`
+- Latest version of `neovim` (0.9.0+)
+- [snacks.nvim](https://github.com/folke/snacks.nvim)
 
 ### 💻 Installation
 
 ```lua
--- Lazy
+-- Lazy.nvim
 {
     '2kabhishek/seeker.nvim',
-    cmd = { 'Template' },
-    keys = { '<leader>th', '<leader>tH', },
-    -- Add your custom configs here, keep it blank for default configs (required)
-    opts = {},
-    -- Use this for local development
-    -- dir = '~/path-to/seeker.nvim',
-},
+    dependencies = { 'folke/snacks.nvim' },
+    cmd = { 'Seeker' },
+    keys = {
+        { '<leader>sf', '<cmd>Seeker<cr>', desc = 'Seeker: Start file investigation' },
+    },
+    opts = {
+        -- Add your custom configs here (optional)
+    },
+}
 ```
 
 ## 🚀 Usage
 
-1. Fork the `seeker.nvim` repo
-2. Update the plugin name, file names etc, change `template` to `your-plugin-name`
-3. Add the code required for your plugin:
-   - **Code entrypoint**: [template.lua](./lua/template.lua) - Main setup function
-   - **User configs**: [config.lua](./lua/template/config.lua) - Configuration with type annotations
-   - **Commands**: [commands.lua](./lua/template/commands.lua) - Modern command system with completion
-   - **Plugin logic**: [module.lua](./lua/template/module.lua) - Core functionality with type safety
-   - **Additional modules**: Add more modules under [modules](./lua/template/) directory as needed
-4. **Command System Features**:
-   - Unified command interface with subcommands
-   - Tab completion support for better UX
-   - Reusable helper functions for DRY code
-   - Comprehensive type annotations for better development experience
-5. Add test code to the [tests](./tests/) directory
-6. Update the README with your plugin's functionality
-7. Tweak the [docs action](./.github/workflows/docs.yml) file to reflect your plugin name, commit email and username
-   - Generating vimdocs needs read and write access to actions (repo settings > actions > general > workflow permissions)
+### Basic Workflow
+
+1. **Start Seeker**: Run `:Seeker` or press `<leader>sf`
+2. **Filter Files**: Type to filter files by name (standard file picker behavior)
+3. **Switch to Grep**: Press `<C-,>` to search within the filtered files
+4. **Search Content**: Type to search for content within those files
+5. **Refine Files**: Press `<C-,>` again to see only files with matches
+6. **Continue Refining**: Keep switching between modes to progressively narrow results
+
+### Multi-Selection
+
+- Press `<Tab>` to select specific files before switching modes
+- If no files are selected, all visible filtered results are used
+- Works in both file and grep modes
 
 ### Configuration
 
 seeker.nvim can be configured using the following options:
 
 ```lua
-template.setup({
-    name = 'seeker.nvim', -- Name to be greeted, 'World!' by default
-    add_default_keybindings = true, -- Whether to add default keybindings
+require('seeker').setup({
+    picker_type = 'git_files',  -- 'git_files' or 'files' (auto-detect if nil)
+    toggle_key = '<C-,>',        -- Key to toggle between modes
+    use_git_files = nil,         -- Auto-detect git repo (true/false to override)
+    picker_opts = {              -- Options passed to snacks.picker
+        layout = {
+            preset = 'ivy',      -- or 'default', 'vertical', etc.
+        },
+    },
+    notifications = true,        -- Show mode switch notifications
+    add_default_keybindings = true,  -- Add <leader>sf keybinding
 })
 ```
 
 ### Commands
 
-`seeker.nvim` provides a unified command interface with tab completion:
-
-- `Template greet [name]` - Shows a hello message with the specified name (with tab completion)
-- `Template notify [message]` - Shows a notification with custom message
+- `:Seeker` - Start seeker file investigation
 
 ### Keybindings
 
-Here are the default keybindings:
+| Keybinding   | Mode              | Description                  |
+| ------------ | ----------------- | ---------------------------- |
+| `<leader>sf` | Normal            | Start Seeker                 |
+| `<C-,>`      | File Picker (n/i) | Toggle to Grep mode          |
+| `<C-,>`      | Grep Picker (n/i) | Toggle to File mode          |
+| `<Tab>`      | Picker (n/i)      | Select/deselect current item |
 
-| Keybinding   | Command                 | Description                 |
-| ------------ | ----------------------- | --------------------------- |
-| `<leader>th` | `Template greet`        | Template greet default name |
-| `<leader>tH` | `Template greet Neovim` | Template greet Neovim       |
+> You can customize the toggle key and disable default keybindings in the config.
 
-> You can disable default keybindings by setting `add_default_keybindings = false` in your config.
+### API
 
-### Help
+```lua
+-- Start seeker programmatically
+require('seeker').seek()
 
-Run `:help template.txt` for more details.
+-- Start with custom options (merged with setup config)
+require('seeker').seek({
+    picker_opts = {
+        layout = { preset = 'vertical' }
+    }
+})
+```
 
-## 🏗️ What's Next
+## 🏗️ How It Works
 
-Planning to add `<feature/module>`.
+### Progressive Refinement
 
-### ✅ To-Do
+Seeker uses a stateful approach to maintain context across mode switches:
 
-- [x] Setup repo
-- [ ] Think real hard
-- [ ] Start typing
+1. **File → Grep**: Extracts filtered/selected files and searches only within those
+2. **Grep → File**: Extracts unique files from grep results and shows only those files
+3. **Repeat**: Each cycle progressively narrows down the result set
+
+### State Management
+
+- `state.file_list`: Files to search in grep mode
+- `state.grep_files`: Files with matches (shown in file mode)
+- `state.mode`: Current mode ('file' | 'grep')
+
+### Smart Path Handling
+
+- Auto-detects git repositories
+- Handles both absolute and relative paths
+- Validates file existence
+- Supports multiple path formats from snacks.picker
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+nvim --headless -c "PlenaryBustedDirectory tests/ {minimal_init = 'tests/init.lua'}"
+# or
+make
+
+# Run specific test file
+nvim --headless -c "PlenaryBustedFile tests/seeker/state_spec.lua {minimal_init = 'tests/init.lua'}"
+```
 
 ## ⛅ Behind The Code
 
 ### 🌈 Inspiration
 
-seeker.nvim was inspired by [nvim-plugin-template](https://github.com/ellisonleao/nvim-plugin-template), I added some changes on top to make setting up a new plugin faster.
+I frequently needed to investigate codebases by filtering files, then searching within those files, then further refining based on content - but existing tools required starting over each time. Seeker solves this by maintaining context across mode switches.
 
 ### 💡 Challenges/Learnings
 
-- The main challenges were `<issue/difficulty>`
-- I learned about `<learning/accomplishment>`
+- Understanding snacks.picker's API and item formats
+- Managing state across picker instances
+- Handling multiple path formats (string vs table items)
+- Progressive refinement without losing context
 
-### 🧰 Tooling
+### 🔍 Related Projects
+
+- [snacks.nvim](https://github.com/folke/snacks.nvim) - The picker foundation
+- [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) - Alternative fuzzy finder
+- [fzf-lua](https://github.com/ibhagwan/fzf-lua) - Lua fzf implementation
+
+## 🧰 Tooling
 
 - [dots2k](https://github.com/2kabhishek/dots2k) — Dev Environment
 - [nvim2k](https://github.com/2kabhishek/nvim2k) — Personalized Editor
