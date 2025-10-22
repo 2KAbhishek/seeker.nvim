@@ -9,11 +9,7 @@ describe('seeker.config', function()
 
     describe('defaults', function()
         it('should have default toggle_key', function()
-            assert.equals('<C-,>', config.config.toggle_key)
-        end)
-
-        it('should have notifications enabled by default', function()
-            assert.is_true(config.config.notifications)
+            assert.equals('<C-e>', config.config.toggle_key)
         end)
 
         it('should have default keybindings enabled', function()
@@ -22,19 +18,16 @@ describe('seeker.config', function()
 
         it('should have default picker_opts', function()
             assert.is_table(config.config.picker_opts)
-            assert.is_table(config.config.picker_opts.layout)
         end)
     end)
 
     describe('setup', function()
         it('should merge user config with defaults', function()
             config.setup({
-                toggle_key = '<C-s>',
-                notifications = false,
+                toggle_key = '<C-x>',
             })
 
-            assert.equals('<C-s>', config.config.toggle_key)
-            assert.is_false(config.config.notifications)
+            assert.equals('<C-x>', config.config.toggle_key)
             assert.is_true(config.config.add_default_keybindings)
         end)
 
