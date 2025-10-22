@@ -80,21 +80,22 @@ M.create_file_picker = function()
     local config = config_module.get()
     local grep_files = state.get_grep_results()
 
-    local picker_opts = vim.tbl_deep_extend('force', config.picker_opts or {}, {
-        win = {
-            input = {
-                keys = {
-                    [config.toggle_key] = {
-                        function(picker)
-                            toggle_to_grep(picker)
-                        end,
-                        mode = { 'n', 'i' },
-                        desc = 'Toggle to grep mode',
-                    },
-                },
-            },
-        },
-    })
+    local picker_opts = vim.tbl_deep_extend('force', config.picker_opts or {}, {})
+
+    picker_opts.actions = picker_opts.actions or {}
+    picker_opts.actions.seeker_toggle = function(picker)
+        toggle_to_grep(picker)
+    end
+
+    picker_opts.win = picker_opts.win or {}
+    picker_opts.win.input = picker_opts.win.input or {}
+    picker_opts.win.input.keys = picker_opts.win.input.keys or {}
+
+    picker_opts.win.input.keys[config.toggle_key] = {
+        'seeker_toggle',
+        mode = { 'n', 'i' },
+        desc = 'Seeker: Toggle to grep mode',
+    }
 
     if #grep_files > 0 then
         local Snacks = require('snacks')
@@ -104,7 +105,11 @@ M.create_file_picker = function()
             local items = {}
             for _, file in ipairs(grep_files) do
                 local relative_path = vim.fn.fnamemodify(file, ':~:.')
-                table.insert(items, relative_path)
+                table.insert(items, {
+                    text = relative_path,
+                    file = relative_path,
+                    cwd = cwd,
+                })
             end
             return items
         end
@@ -126,28 +131,29 @@ M.create_grep_picker = function()
     local config = config_module.get()
     local file_list = state.get_files()
 
-    local picker_opts = vim.tbl_deep_extend('force', config.picker_opts or {}, {
-        win = {
-            input = {
-                keys = {
-                    [config.toggle_key] = {
-                        function(picker)
-                            toggle_to_file(picker)
-                        end,
-                        mode = { 'n', 'i' },
-                        desc = 'Toggle to file mode',
-                    },
-                },
-            },
-        },
-    })
+    local picker_opts = vim.tbl_deep_extend('force', config.picker_opts or {}, {})
+
+    picker_opts.actions = picker_opts.actions or {}
+    picker_opts.actions.seeker_toggle = function(picker)
+        toggle_to_file(picker)
+    end
+
+    picker_opts.win = picker_opts.win or {}
+    picker_opts.win.input = picker_opts.win.input or {}
+    picker_opts.win.input.keys = picker_opts.win.input.keys or {}
+
+    picker_opts.win.input.keys[config.toggle_key] = {
+        'seeker_toggle',
+        mode = { 'n', 'i' },
+        desc = 'Seeker: Toggle to file mode',
+    }
 
     if #file_list > 0 then
         local relative_paths = {}
         for _, file in ipairs(file_list) do
             table.insert(relative_paths, vim.fn.fnamemodify(file, ':~:.'))
         end
-        picker_opts.dirs = relative_paths
+        picker_opts.glob = relative_paths
     end
 
     local Snacks = require('snacks')
