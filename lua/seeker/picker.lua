@@ -5,30 +5,18 @@ local state = require('seeker.state')
 local utils = require('seeker.utils')
 local config_module = require('seeker.config')
 
----Show notification if enabled
----@param message string
----@param level number?
-local function notify(message, level)
-    local config = config_module.get()
-    if config.notifications then
-        vim.notify(message, level or vim.log.levels.INFO, { title = 'Seeker' })
-    end
-end
-
 ---Toggle from file mode to grep mode
 ---@param picker table Snacks picker object
 local function toggle_to_grep(picker)
     local items = utils.get_picker_items(picker)
 
     if #items == 0 then
-        notify('No files to search in', vim.log.levels.WARN)
         return
     end
 
     local file_paths = utils.extract_file_paths(items)
 
     if #file_paths == 0 then
-        notify('No valid file paths found', vim.log.levels.WARN)
         return
     end
 
@@ -36,8 +24,6 @@ local function toggle_to_grep(picker)
     state.set_mode('grep')
 
     picker:close()
-
-    notify(string.format('Searching in %d file(s)', #file_paths))
 
     vim.schedule(function()
         M.create_grep_picker()
@@ -50,14 +36,12 @@ local function toggle_to_file(picker)
     local items = utils.get_picker_items(picker)
 
     if #items == 0 then
-        notify('No grep results to refine', vim.log.levels.WARN)
         return
     end
 
     local file_paths = utils.get_unique_files(items)
 
     if #file_paths == 0 then
-        notify('No files found in grep results', vim.log.levels.WARN)
         return
     end
 
@@ -65,8 +49,6 @@ local function toggle_to_file(picker)
     state.set_mode('file')
 
     picker:close()
-
-    notify(string.format('Refined to %d file(s)', #file_paths))
 
     vim.schedule(function()
         M.create_file_picker()
