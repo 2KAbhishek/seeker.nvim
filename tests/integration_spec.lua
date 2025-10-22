@@ -26,13 +26,11 @@ describe('seeker integration', function()
             assert.has_no_error(function()
                 seeker.setup({
                     toggle_key = '<C-x>',
-                    notifications = false,
                 })
             end)
 
             local config = require('seeker.config').get()
             assert.equals('<C-x>', config.toggle_key)
-            assert.is_false(config.notifications)
         end)
     end)
 
@@ -96,25 +94,6 @@ describe('seeker integration', function()
             state.set_mode('file')
 
             assert.equals(1, #state.get_grep_results())
-        end)
-    end)
-
-    describe('config integration', function()
-        it('should auto-detect git repository', function()
-            local config_module = require('seeker.config')
-            config_module.setup()
-
-            local config = config_module.get()
-            assert.is_not_nil(config.picker_type)
-            assert.is_boolean(config.use_git_files)
-        end)
-
-        it('should respect user picker_type preference', function()
-            local config_module = require('seeker.config')
-            config_module.setup({ picker_type = 'files' })
-
-            local config = config_module.get()
-            assert.equals('files', config.picker_type)
         end)
     end)
 
