@@ -1,16 +1,5 @@
-local config = require('seeker.config').config
-
 ---@class SeekerCommands
 local M = {}
-
----Add default keymaps for commands
-local function add_default_keymaps()
-    local function add_keymap(keys, cmd, desc)
-        vim.api.nvim_set_keymap('n', keys, cmd, { noremap = true, silent = true, desc = desc })
-    end
-
-    add_keymap('<leader>ff', ':Seeker<CR>', 'Seek Files')
-end
 
 ---Completion function for Seeker command
 ---@param arg_lead string
@@ -46,10 +35,6 @@ M.setup = function()
         complete = seeker_complete,
         desc = 'Seek Files (modes: files, git_files, grep)',
     })
-
-    if config.add_default_keybindings then
-        add_default_keymaps()
-    end
 end
 
 return M

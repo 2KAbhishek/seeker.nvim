@@ -58,6 +58,11 @@ Built on top of [snacks.nvim](https://github.com/folke/snacks.nvim) picker, seek
     '2kabhishek/seeker.nvim',
     dependencies = { 'folke/snacks.nvim' },
     cmd = { 'Seeker' },
+    keys = {
+        { '<leader>fa', ':Seeker files<CR>', desc = 'Seek Files' },
+        { '<leader>ff', ':Seeker git_files<CR>', desc = 'Seek Git Files' },
+        { '<leader>fg', ':Seeker grep<CR>', desc = 'Seek Grep' },
+    },
     opts = { }, -- Required unless you call seeker.setup() manually
 }
 ```
@@ -66,7 +71,7 @@ Built on top of [snacks.nvim](https://github.com/folke/snacks.nvim) picker, seek
 
 ### Basic Workflow
 
-1. **Start Seeker**: Run `:Seeker` or press `<leader>sf`
+1. **Start Seeker**: Run `:Seeker` or press `<leader>ff`
 2. **Filter Files**: Type to filter files by name (standard file picker behavior)
 3. **Switch to Grep**: Press `<C-e>` to search within the filtered files
 4. **Search Content**: Type to search for content within those files
@@ -75,7 +80,7 @@ Built on top of [snacks.nvim](https://github.com/folke/snacks.nvim) picker, seek
 
 ### Multi-Selection
 
-- Press `<Tab>` to select specific files before switching modes
+- Press `<Tab>` to select specific files to search before switching modes
 - If no files are selected, all visible filtered results are used
 - Works in both file and grep modes
 
@@ -85,9 +90,8 @@ seeker.nvim can be configured using the following options:
 
 ```lua
 require('seeker').setup({
-    toggle_key = '<C-e>',           -- Key to toggle between modes (default)
-    picker_opts = {},               -- Options passed to snacks.picker (optional)
-    add_default_keybindings = true, -- Add <leader>ff keybinding (default)
+    toggle_key = '<C-e>', -- Key to toggle between modes (default)
+    picker_opts = {}, -- Options passed to snacks.picker (optional)
 })
 ```
 
@@ -104,11 +108,15 @@ The `:Seeker` command accepts an optional mode argument with tab completion:
 
 | Keybinding   | Mode              | Description             |
 | ------------ | ----------------- | ----------------------- |
-| `<leader>ff` | Normal            | Start Seeker            |
+| `<leader>fa` | Normal            | Seek Files              |
+| `<leader>ff` | Normal            | Seek Git Files          |
+| `<leader>fg` | Normal            | Seek Grep               |
 | `<C-e>`      | File Picker (n/i) | Toggle Grep / File mode |
 | `<Tab>`      | Picker (n/i)      | Multi Selection         |
 
-> You can customize the toggle key and disable default keybindings in the config.
+You can customize the toggle key via config, and others using lazy's key definitions.
+
+> If you use [pickme.nvim](https://github.com/2kabhishek/pickme.nvim), you need to add Seeker keybindgings manually / via which key.
 
 ### API
 
