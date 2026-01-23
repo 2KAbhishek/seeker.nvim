@@ -22,13 +22,9 @@
 
 <h3>Progressive file seeker for Neovim 🔍🎯</h3>
 
-<figure>
-  <img src="doc/images/screenshot.png" alt="seeker.nvim in action">
-  <br/>
-  <figcaption>seeker.nvim in action</figcaption>
-</figure>
-
 </div>
+
+https://github.com/user-attachments/assets/4f16a8b9-7e39-4053-bde7-37646b8954cd
 
 seeker.nvim is a Neovim plugin that enables progressive file investigation by seamlessly switching between file filtering and content searching (grep), with each switch refining your results.
 
