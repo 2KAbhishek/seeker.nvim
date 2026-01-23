@@ -57,7 +57,7 @@ Built on top of [snacks.nvim](https://github.com/folke/snacks.nvim) picker, seek
         { '<leader>ff', ':Seeker git_files<CR>', desc = 'Seek Git Files' },
         { '<leader>fg', ':Seeker grep<CR>', desc = 'Seek Grep' },
     },
-    opts = { }, -- Required unless you call seeker.setup() manually
+    opts = { }, -- Required unless you call seeker.setup() manually, add your configs here
 }
 ```
 
