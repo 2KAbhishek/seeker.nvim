@@ -183,7 +183,7 @@ I frequently needed to investigate codebases by filtering files, then searching 
 
 ### 🔍 More Plugins
 
-- [pickme.nvim](https://github.com/2kabhishek/nerdy.nvim) — One picker to rule them all
+- [pickme.nvim](https://github.com/2kabhishek/pickme.nvim) — One picker to rule them all
 - [nerdy.nvim](https://github.com/2kabhishek/nerdy.nvim) — Find nerd glyphs easily
 - [tdo.nvim](https://github.com/2KAbhishek/tdo.nvim) — Fast and simple notes in Neovim
 - [termim.nvim](https://github.com/2kabhishek/termim.nvim) — Neovim terminal improved
