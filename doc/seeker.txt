@@ -1,1 +1,214 @@
-hi
+*seeker.txt*          For Neovim >= 0.8.0         Last change: 2026 January 23
+
+==============================================================================
+Table of Contents                                   *seeker-table-of-contents*
+
+  - Features                                                 |seeker-features|
+  - Setup                                                       |seeker-setup|
+  - Usage                                                       |seeker-usage|
+  - How It Works                                         |seeker-how-it-works|
+  - Testing                                                   |seeker-testing|
+  - Behind The Code                                   |seeker-behind-the-code|
+  - Tooling                                                   |seeker-tooling|
+
+
+https://github.com/user-attachments/assets/4f16a8b9-7e39-4053-bde7-37646b8954cd
+
+seeker.nvimis a Neovim plugin that enables progressive file investigation by
+seamlessly switching between file filtering and content searching (grep), with
+each switch refining your results.
+
+Built on top of snacks.nvim <https://github.com/folke/snacks.nvim> picker,
+seeker provides a powerful workflow for narrowing down files by name, then
+searching within those files, then further refining the file list based on grep
+results - all without losing context.
+
+
+FEATURES                                                     *seeker-features*
+
+- **Progressive Refinement**: Each mode switch narrows down results (File → Grep → File progressively filters)
+- **Seamless Mode Switching**: Toggle between file and grep modes with a single keybinding
+- **Smart File Selection**: Supports both Tab-selection and automatic filtering of visible results
+- **Configurable**: Customize toggle keys, picker options, and more
+
+
+SETUP                                                           *seeker-setup*
+
+
+REQUIREMENTS ~
+
+- Latest version of `neovim` (0.9.0+)
+- snacks.nvim <https://github.com/folke/snacks.nvim>
+
+
+INSTALLATION ~
+
+>lua
+    -- Lazy.nvim
+    {
+        '2kabhishek/seeker.nvim',
+        dependencies = { 'folke/snacks.nvim' },
+        cmd = { 'Seeker' },
+        keys = {
+            { '<leader>fa', ':Seeker files<CR>', desc = 'Seek Files' },
+            { '<leader>ff', ':Seeker git_files<CR>', desc = 'Seek Git Files' },
+            { '<leader>fg', ':Seeker grep<CR>', desc = 'Seek Grep' },
+        },
+        opts = { }, -- Required unless you call seeker.setup() manually, add your configs here
+    }
+<
+
+
+USAGE                                                           *seeker-usage*
+
+
+BASIC WORKFLOW ~
+
+1. **Start Seeker**: Run `:Seeker` or press `<leader>ff`
+2. **Filter Files**: Type to filter files by name (standard file picker behavior)
+3. **Switch to Grep**: Press `<C-e>` to search within the filtered files
+4. **Search Content**: Type to search for content within those files
+5. **Refine Files**: Press `<C-e>` again to see only files with matches
+6. **Continue Refining**: Keep switching between modes to progressively narrow results
+
+
+MULTI-SELECTION ~
+
+- Press `<Tab>` to select specific files to search before switching modes
+- If no files are selected, all visible filtered results are used
+- Works in both file and grep modes
+
+
+CONFIGURATION ~
+
+seeker.nvim can be configured using the following options:
+
+>lua
+    require('seeker').setup({
+        toggle_key = '<C-e>', -- Key to toggle between modes (default)
+        picker_opts = {}, -- Options passed to snacks.picker (optional)
+    })
+<
+
+
+COMMANDS ~
+
+The `:Seeker` command accepts an optional mode argument with tab completion:
+
+- `:Seeker` - Auto-detect (uses git_files in git repos, files otherwise)
+- `:Seeker files` - Force files picker (all files)
+- `:Seeker git_files` - Force git_files picker (git tracked files only)
+- `:Seeker grep` - Start with grep picker directly
+
+
+KEYBINDINGS ~
+
+  Keybinding   Mode                Description
+  ------------ ------------------- -------------------------
+  <leader>fa   Normal              Seek Files
+  <leader>ff   Normal              Seek Git Files
+  <leader>fg   Normal              Seek Grep
+  <C-e>        File Picker (n/i)   Toggle Grep / File mode
+  <Tab>        Picker (n/i)        Multi Selection
+You can customize the toggle key via config, and others using lazy’s key
+definitions.
+
+
+  If you use pickme.nvim <https://github.com/2kabhishek/pickme.nvim>, you need to
+  add Seeker keybindgings manually / via which key.
+
+API ~
+
+>lua
+    -- Start seeker programmatically
+    require('seeker').seek()
+    
+    -- Start with custom options (merged with setup config)
+    require('seeker').seek({
+        picker_opts = {
+            layout = { preset = 'vertical' }
+        }
+    })
+<
+
+
+HOW IT WORKS                                             *seeker-how-it-works*
+
+
+PROGRESSIVE REFINEMENT ~
+
+Seeker uses a stateful approach to maintain context across mode switches:
+
+1. **File → Grep**: Extracts filtered/selected files and searches only within those
+2. **Grep → File**: Extracts unique files from grep results and shows only those files
+3. **Repeat**: Each cycle progressively narrows down the result set
+
+
+STATE MANAGEMENT ~
+
+- `state.file_list`: Files to search in grep mode
+- `state.grep_files`: Files with matches (shown in file mode)
+- `state.mode`: Current mode ('file' | 'grep')
+
+
+SMART PATH HANDLING ~
+
+- Auto-detects git repositories
+- Handles both absolute and relative paths
+- Validates file existence
+- Supports multiple path formats from snacks.picker
+
+
+TESTING                                                       *seeker-testing*
+
+>bash
+    # Run all tests
+    nvim --headless -c "PlenaryBustedDirectory tests/ {minimal_init = 'tests/init.lua'}"
+    # or
+    make
+    
+    # Run specific test file
+    nvim --headless -c "PlenaryBustedFile tests/seeker/state_spec.lua {minimal_init = 'tests/init.lua'}"
+<
+
+
+BEHIND THE CODE                                       *seeker-behind-the-code*
+
+
+INSPIRATION ~
+
+I frequently needed to investigate codebases by filtering files, then searching
+within those files, then further refining based on content - but existing tools
+required starting over each time. Seeker solves this by maintaining context
+across mode switches.
+
+
+CHALLENGES/LEARNINGS ~
+
+- Understanding snacks.picker’s API and item formats
+- Managing state across picker instances
+- Handling multiple path formats (string vs table items)
+- Progressive refinement without losing context
+
+
+TOOLING                                                       *seeker-tooling*
+
+- dots2k <https://github.com/2kabhishek/dots2k> — Dev Environment
+- nvim2k <https://github.com/2kabhishek/nvim2k> — Personalized Editor
+- sway2k <https://github.com/2kabhishek/sway2k> — Desktop Environment
+- qute2k <https://github.com/2kabhishek/qute2k> — Personalized Browser
+
+
+MORE PLUGINS ~
+
+- pickme.nvim <https://github.com/2kabhishek/nerdy.nvim> — One picker to rule them all
+- nerdy.nvim <https://github.com/2kabhishek/nerdy.nvim> — Find nerd glyphs easily
+- tdo.nvim <https://github.com/2KAbhishek/tdo.nvim> — Fast and simple notes in Neovim
+- termim.nvim <https://github.com/2kabhishek/termim.nvim> — Neovim terminal improved
+- octohub.nvim <https://github.com/2kabhishek/octohub.nvim> — Github repos in Neovim
+- exercism.nvim <https://github.com/2kabhishek/exercism.nvim> — Exercism exercises in Neovim
+
+
+Generated by panvimdoc <https://github.com/kdheepak/panvimdoc>
+
+vim:tw=78:ts=8:noet:ft=help:norl:
