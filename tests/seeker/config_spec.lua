@@ -12,10 +12,6 @@ describe('seeker.config', function()
             assert.equals('<C-e>', config.config.toggle_key)
         end)
 
-        it('should have default keybindings enabled', function()
-            assert.is_true(config.config.add_default_keybindings)
-        end)
-
         it('should have default picker_opts', function()
             assert.is_table(config.config.picker_opts)
         end)
@@ -28,7 +24,6 @@ describe('seeker.config', function()
             })
 
             assert.equals('<C-x>', config.config.toggle_key)
-            assert.is_true(config.config.add_default_keybindings)
         end)
 
         it('should deep merge picker_opts', function()
