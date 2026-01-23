@@ -39,9 +39,7 @@ Built on top of [snacks.nvim](https://github.com/folke/snacks.nvim) picker, seek
 - **Progressive Refinement**: Each mode switch narrows down results (File → Grep → File progressively filters)
 - **Seamless Mode Switching**: Toggle between file and grep modes with a single keybinding
 - **Smart File Selection**: Supports both Tab-selection and automatic filtering of visible results
-- **Git Integration**: Auto-detects git repositories and uses `git_files` for faster, gitignore-aware searches
 - **Configurable**: Customize toggle keys, picker options, and more
-- **Zero External Dependencies**: Only requires snacks.nvim
 
 ## ⚡ Setup
 
