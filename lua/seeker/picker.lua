@@ -12,13 +12,14 @@ M.seek = function(opts)
 
     local backend = backends.get_backend()
     local mode = opts.mode
+    local picker_opts = opts.picker_opts or {}
 
     if mode == 'grep' then
-        backend.create_grep_picker()
+        backend.create_grep_picker(picker_opts)
     elseif mode == 'files' or mode == 'git_files' then
-        backend.create_file_picker(mode)
+        backend.create_file_picker(picker_opts, mode)
     else
-        backend.create_file_picker()
+        backend.create_file_picker(picker_opts)
     end
 end
 
