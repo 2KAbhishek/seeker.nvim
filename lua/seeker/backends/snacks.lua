@@ -15,7 +15,23 @@ local function toggle_to_grep(picker)
         return
     end
 
-    local file_paths = utils.extract_file_paths(items)
+    -- Extract file paths and convert to absolute paths using item.cwd
+    local file_paths = {}
+    for _, item in ipairs(items) do
+        local file = nil
+        if type(item) == 'string' then
+            file = item
+        elseif type(item) == 'table' then
+            file = item.file or item.path or item.filename
+        end
+
+        if file then
+            -- Use the item's cwd if available, otherwise use current working directory
+            local cwd = (type(item) == 'table' and item.cwd) or vim.fn.getcwd()
+            local abs_path = vim.fn.fnamemodify(cwd .. '/' .. file, ':p')
+            table.insert(file_paths, abs_path)
+        end
+    end
 
     if #file_paths == 0 then
         return
@@ -132,11 +148,7 @@ M.create_grep_picker = function()
     }
 
     if #file_list > 0 then
-        local relative_paths = {}
-        for _, file in ipairs(file_list) do
-            table.insert(relative_paths, vim.fn.fnamemodify(file, ':~:.'))
-        end
-        picker_opts.glob = relative_paths
+        picker_opts.dirs = file_list
     end
 
     Snacks.picker.grep(picker_opts)
