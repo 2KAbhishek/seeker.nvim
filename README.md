@@ -42,12 +42,14 @@ Built on top of [snacks.nvim](https://github.com/folke/snacks.nvim) picker, seek
 ### ⚙️ Requirements
 
 - Latest version of `neovim` (0.9.0+)
-- [snacks.nvim](https://github.com/folke/snacks.nvim)
+- **One of the following picker providers:**
+  - [snacks.nvim](https://github.com/folke/snacks.nvim) (default)
+  - [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim)
 
 ### 💻 Installation
 
 ```lua
--- Lazy.nvim
+-- Lazy.nvim with snacks.nvim
 {
     '2kabhishek/seeker.nvim',
     dependencies = { 'folke/snacks.nvim' },
@@ -58,6 +60,21 @@ Built on top of [snacks.nvim](https://github.com/folke/snacks.nvim) picker, seek
         { '<leader>fg', ':Seeker grep<CR>', desc = 'Seek Grep' },
     },
     opts = { }, -- Required unless you call seeker.setup() manually, add your configs here
+}
+
+-- OR with telescope.nvim
+{
+    '2kabhishek/seeker.nvim',
+    dependencies = { 'nvim-telescope/telescope.nvim' },
+    cmd = { 'Seeker' },
+    keys = {
+        { '<leader>fa', ':Seeker files<CR>', desc = 'Seek Files' },
+        { '<leader>ff', ':Seeker git_files<CR>', desc = 'Seek Git Files' },
+        { '<leader>fg', ':Seeker grep<CR>', desc = 'Seek Grep' },
+    },
+    opts = {
+        picker_provider = 'telescope',
+    },
 }
 ```
 
@@ -84,8 +101,9 @@ seeker.nvim can be configured using the following options:
 
 ```lua
 require('seeker').setup({
-    toggle_key = '<C-e>', -- Key to toggle between modes (default)
-    picker_opts = {}, -- Options passed to snacks.picker (optional)
+    picker_provider = 'snacks', -- Picker provider: 'snacks' or 'telescope' (default: 'snacks')
+    toggle_key = '<C-e>',       -- Key to toggle between modes (default)
+    picker_opts = {},           -- Options passed to the picker provider (optional)
 })
 ```
 
