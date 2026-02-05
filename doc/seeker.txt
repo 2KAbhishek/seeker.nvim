@@ -1,4 +1,4 @@
-*seeker.txt*          For Neovim >= 0.8.0         Last change: 2026 January 30
+*seeker.txt*         For Neovim >= 0.8.0         Last change: 2026 February 05
 
 ==============================================================================
 Table of Contents                                   *seeker-table-of-contents*
