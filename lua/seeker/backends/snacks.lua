@@ -8,7 +8,8 @@ local Snacks = require('snacks')
 
 ---Toggle from file mode to grep mode
 ---@param picker table Snacks picker object
-local function toggle_to_grep(picker)
+---@param custom_picker_opts table Picker options to override defaults
+local function toggle_to_grep(picker, custom_picker_opts)
     local items = utils.get_picker_items(picker)
 
     if #items == 0 then
@@ -43,13 +44,14 @@ local function toggle_to_grep(picker)
     picker:close()
 
     vim.schedule(function()
-        M.create_grep_picker()
+        M.create_grep_picker(custom_picker_opts)
     end)
 end
 
 ---Toggle from grep mode to file mode
 ---@param picker table Snacks picker object
-local function toggle_to_file(picker)
+---@param custom_picker_opts table Picker options to verride defaults
+local function toggle_to_file(picker, custom_picker_opts)
     local items = utils.get_picker_items(picker)
 
     if #items == 0 then
@@ -68,21 +70,23 @@ local function toggle_to_file(picker)
     picker:close()
 
     vim.schedule(function()
-        M.create_file_picker()
+        M.create_file_picker(custom_picker_opts)
     end)
 end
 
 ---Create a file picker
+---@param custom_picker_opts table Picker options to override defaults
 ---@param mode string? 'git_files' or 'files' (auto-detect if nil)
-M.create_file_picker = function(mode)
+M.create_file_picker = function(custom_picker_opts, mode)
     local config = config_module.get()
     local grep_files = state.get_grep_results()
 
     local picker_opts = vim.tbl_deep_extend('force', config.picker_opts or {}, {})
+    picker_opts = vim.tbl_deep_extend('force', picker_opts, custom_picker_opts or {})
 
     picker_opts.actions = picker_opts.actions or {}
     picker_opts.actions.seeker_toggle = function(picker)
-        toggle_to_grep(picker)
+        toggle_to_grep(picker, custom_picker_opts)
     end
 
     picker_opts.win = picker_opts.win or {}
@@ -126,11 +130,13 @@ M.create_file_picker = function(mode)
 end
 
 ---Create a grep picker
-M.create_grep_picker = function()
+---@param custom_picker_opts table Picker options to override defaults
+M.create_grep_picker = function(custom_picker_opts)
     local config = config_module.get()
     local file_list = state.get_files()
 
     local picker_opts = vim.tbl_deep_extend('force', config.picker_opts or {}, {})
+    picker_opts = vim.tbl_deep_extend('force', picker_opts, custom_picker_opts or {})
 
     picker_opts.actions = picker_opts.actions or {}
     picker_opts.actions.seeker_toggle = function(picker)

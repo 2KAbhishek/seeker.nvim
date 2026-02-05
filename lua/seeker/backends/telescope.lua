@@ -50,7 +50,8 @@ end
 
 ---Toggle from file mode to grep mode
 ---@param prompt_bufnr number Buffer number
-local function toggle_to_grep(prompt_bufnr)
+---@param custom_picker_opts table Picker options to override defaults
+local function toggle_to_grep(prompt_bufnr, custom_picker_opts)
     local action_state = require('telescope.actions.state')
     local actions = require('telescope.actions')
 
@@ -73,13 +74,14 @@ local function toggle_to_grep(prompt_bufnr)
     actions.close(prompt_bufnr)
 
     vim.schedule(function()
-        M.create_grep_picker()
+        M.create_grep_picker(custom_picker_opts)
     end)
 end
 
 ---Toggle from grep mode to file mode
 ---@param prompt_bufnr number Buffer number
-local function toggle_to_file(prompt_bufnr)
+---@param custom_picker_opts table Picker options to override defaults
+local function toggle_to_file(prompt_bufnr, custom_picker_opts)
     local action_state = require('telescope.actions.state')
     local actions = require('telescope.actions')
 
@@ -102,21 +104,23 @@ local function toggle_to_file(prompt_bufnr)
     actions.close(prompt_bufnr)
 
     vim.schedule(function()
-        M.create_file_picker()
+        M.create_file_picker(custom_picker_opts)
     end)
 end
 
 ---Create a file picker
+---@param custom_picker_opts table Picker options to override defaults
 ---@param mode string? 'git_files' or 'files' (auto-detect if nil)
-M.create_file_picker = function(mode)
+M.create_file_picker = function(custom_picker_opts, mode)
     local config = config_module.get()
     local grep_files = state.get_grep_results()
 
     local opts = vim.tbl_deep_extend('force', config.picker_opts or {}, {})
+    opts = vim.tbl_deep_extend('force', opts, custom_picker_opts or {})
 
     opts.attach_mappings = function(prompt_bufnr, map)
         map({ 'i', 'n' }, config.toggle_key, function()
-            toggle_to_grep(prompt_bufnr)
+            toggle_to_grep(prompt_bufnr, opts)
         end)
         return true
     end
@@ -156,16 +160,18 @@ M.create_file_picker = function(mode)
 end
 
 ---Create a grep picker
-M.create_grep_picker = function()
+---@param custom_picker_opts table Picker options to override defaults
+M.create_grep_picker = function(custom_picker_opts)
     local config = config_module.get()
     local file_list = state.get_files()
     local builtin = require('telescope.builtin')
 
     local opts = vim.tbl_deep_extend('force', config.picker_opts or {}, {})
+    opts = vim.tbl_deep_extend('force', opts, custom_picker_opts or {})
 
     opts.attach_mappings = function(prompt_bufnr, map)
         map({ 'i', 'n' }, config.toggle_key, function()
-            toggle_to_file(prompt_bufnr)
+            toggle_to_file(prompt_bufnr, opts)
         end)
         return true
     end
