@@ -120,7 +120,7 @@ M.create_file_picker = function(custom_picker_opts, mode)
 
     opts.attach_mappings = function(prompt_bufnr, map)
         map({ 'i', 'n' }, config.toggle_key, function()
-            toggle_to_grep(prompt_bufnr, opts)
+            toggle_to_grep(prompt_bufnr, custom_picker_opts)
         end)
         return true
     end
@@ -171,7 +171,7 @@ M.create_grep_picker = function(custom_picker_opts)
 
     opts.attach_mappings = function(prompt_bufnr, map)
         map({ 'i', 'n' }, config.toggle_key, function()
-            toggle_to_file(prompt_bufnr, opts)
+            toggle_to_file(prompt_bufnr, custom_picker_opts)
         end)
         return true
     end

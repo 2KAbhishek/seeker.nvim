@@ -48,7 +48,7 @@ end
 
 ---Toggle from grep mode to file mode
 ---@param picker table Snacks picker object
----@param custom_picker_opts table Picker options to verride defaults
+---@param custom_picker_opts table Picker options to override defaults
 local function toggle_to_file(picker, custom_picker_opts)
     local items = utils.get_picker_items(picker)
 
@@ -138,7 +138,7 @@ M.create_grep_picker = function(custom_picker_opts)
 
     picker_opts.actions = picker_opts.actions or {}
     picker_opts.actions.seeker_toggle = function(picker)
-        toggle_to_file(picker)
+        toggle_to_file(picker, custom_picker_opts)
     end
 
     picker_opts.win = picker_opts.win or {}
