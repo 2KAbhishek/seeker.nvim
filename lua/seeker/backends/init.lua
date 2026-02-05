@@ -12,10 +12,7 @@ M.get_backend = function()
     if provider == 'telescope' then
         local ok, telescope = pcall(require, 'telescope')
         if not ok then
-            vim.notify(
-                'seeker.nvim: telescope.nvim not found, falling back to snacks.nvim',
-                vim.log.levels.WARN
-            )
+            vim.notify('seeker.nvim: telescope.nvim not found, falling back to snacks.nvim', vim.log.levels.WARN)
             provider = 'snacks'
         end
     end
