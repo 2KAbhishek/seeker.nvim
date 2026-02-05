@@ -16,10 +16,9 @@ local function toggle_to_grep(picker, custom_picker_opts)
         return
     end
 
-    -- Extract file paths and convert to absolute paths using item.cwd
     local file_paths = {}
     for _, item in ipairs(items) do
-        local file = nil
+        local file
         if type(item) == 'string' then
             file = item
         elseif type(item) == 'table' then
@@ -27,9 +26,8 @@ local function toggle_to_grep(picker, custom_picker_opts)
         end
 
         if file then
-            -- Use the item's cwd if available, otherwise use current working directory
             local cwd = (type(item) == 'table' and item.cwd) or vim.fn.getcwd()
-            local abs_path = vim.fn.fnamemodify(cwd .. '/' .. file, ':p')
+            local abs_path = vim.fn.fnamemodify(vim.fs.joinpath(cwd, file), ':p')
             table.insert(file_paths, abs_path)
         end
     end
