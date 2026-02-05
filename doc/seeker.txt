@@ -109,6 +109,27 @@ seeker.nvim can be configured using the following options:
 <
 
 
+PICKER OPTIONS PRECEDENCE
+
+Picker options are merged in the following order (later overrides earlier):
+
+1. **setup() picker_opts** - Options set during plugin setup
+2. **seek() picker_opts** - Options passed when calling seek programmatically
+
+>lua
+    -- Options set during setup have medium precedence
+    require("seeker").setup({
+        picker_opts = { focus = "list" }
+    })
+    
+    -- Options passed here have the highest precedence if you call seek with Lua code
+    require("seeker").seek({
+        mode = "files",
+        picker_opts = { focus = "input", pattern = "foobar" },
+    })
+<
+
+
 COMMANDS ~
 
 The `:Seeker` command accepts an optional mode argument with tab completion:
