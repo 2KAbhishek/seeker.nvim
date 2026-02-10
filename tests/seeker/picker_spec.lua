@@ -124,5 +124,26 @@ describe('seeker.picker', function()
                 }
             })
         end)
+
+        it('should pass custom picker_opts to backend create_grep_word_picker', function()
+            local mock_backend = {
+                create_file_picker = function() end,
+                create_grep_picker = function() end,
+                create_grep_word_picker = function(custom_picker_opts)
+                    assert.equals('grep_word_test_value', custom_picker_opts.grep_word_option)
+                end
+            }
+
+            backends.get_backend = function()
+                return mock_backend
+            end
+
+            picker.seek({
+                mode = 'grep_word',
+                picker_opts = {
+                    grep_word_option = 'grep_word_test_value'
+                }
+            })
+        end)
     end)
 end)
