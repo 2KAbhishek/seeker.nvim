@@ -164,8 +164,6 @@ M.create_grep_word_picker = function(custom_picker_opts)
     local config = config_module.get()
     local file_list = state.get_files()
 
-    state.set_mode('grep')
-
     local picker_opts = vim.tbl_deep_extend('force', config.picker_opts or {}, {})
     picker_opts = vim.tbl_deep_extend('force', picker_opts, custom_picker_opts or {})
 
