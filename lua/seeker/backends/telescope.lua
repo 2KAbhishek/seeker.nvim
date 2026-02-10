@@ -190,8 +190,6 @@ M.create_grep_word_picker = function(custom_picker_opts)
     local file_list = state.get_files()
     local builtin = require('telescope.builtin')
 
-    state.set_mode('grep')
-
     local opts = vim.tbl_deep_extend('force', config.picker_opts or {}, {})
     opts = vim.tbl_deep_extend('force', opts, custom_picker_opts or {})
 
