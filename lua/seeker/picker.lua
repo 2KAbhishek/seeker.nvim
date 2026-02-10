@@ -16,6 +16,8 @@ M.seek = function(opts)
 
     if mode == 'grep' then
         backend.create_grep_picker(picker_opts)
+    elseif mode == 'grep_word' then
+        backend.create_grep_word_picker(picker_opts)
     elseif mode == 'files' or mode == 'git_files' then
         backend.create_file_picker(picker_opts, mode)
     else
