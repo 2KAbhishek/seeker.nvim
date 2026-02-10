@@ -183,4 +183,30 @@ M.create_grep_picker = function(custom_picker_opts)
     builtin.live_grep(opts)
 end
 
+---Create a grep_word picker
+---@param custom_picker_opts table Picker options to override defaults
+M.create_grep_word_picker = function(custom_picker_opts)
+    local config = config_module.get()
+    local file_list = state.get_files()
+    local builtin = require('telescope.builtin')
+
+    state.set_mode('grep')
+
+    local opts = vim.tbl_deep_extend('force', config.picker_opts or {}, {})
+    opts = vim.tbl_deep_extend('force', opts, custom_picker_opts or {})
+
+    opts.attach_mappings = function(prompt_bufnr, map)
+        map({ 'i', 'n' }, config.toggle_key, function()
+            toggle_to_file(prompt_bufnr, custom_picker_opts)
+        end)
+        return true
+    end
+
+    if #file_list > 0 then
+        opts.search_dirs = file_list
+    end
+
+    builtin.grep_string(opts)
+end
+
 return M
