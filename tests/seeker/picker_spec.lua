@@ -146,4 +146,85 @@ describe('seeker.picker', function()
             })
         end)
     end)
+
+    describe('backend state isolation', function()
+        local state
+
+        before_each(function()
+            package.loaded['seeker.state'] = nil
+            state = require('seeker.state')
+            state.init()
+        end)
+
+        it('should not modify state when creating grep_word picker with snacks backend', function()
+            package.loaded['seeker.backends.snacks'] = nil
+            package.loaded['snacks'] = {
+                picker = {
+                    pick = function() end
+                }
+            }
+
+            local backend = require('seeker.backends.snacks')
+
+            state.init()
+            assert.equals('file', state.get_mode())
+
+            backend.create_grep_word_picker({})
+
+            assert.equals('file', state.get_mode())
+        end)
+
+        it('should not modify state when creating grep picker with snacks backend', function()
+            package.loaded['seeker.backends.snacks'] = nil
+            package.loaded['snacks'] = {
+                picker = {
+                    grep = function() end
+                }
+            }
+
+            local backend = require('seeker.backends.snacks')
+
+            state.init()
+            assert.equals('file', state.get_mode())
+
+            backend.create_grep_picker({})
+
+            assert.equals('file', state.get_mode())
+        end)
+
+        it('should not modify state when creating file picker with snacks backend', function()
+            package.loaded['seeker.backends.snacks'] = nil
+            package.loaded['snacks'] = {
+                picker = {
+                    files = function() end,
+                    git_files = function() end
+                }
+            }
+
+            local backend = require('seeker.backends.snacks')
+
+            state.set_mode('grep')
+            assert.equals('grep', state.get_mode())
+
+            backend.create_file_picker({})
+
+            assert.equals('grep', state.get_mode())
+        end)
+
+        it('should not modify state when creating grep_word picker with telescope backend', function()
+            package.loaded['seeker.backends.telescope'] = nil
+            package.loaded['telescope.builtin'] = {
+                grep_string = function() end
+            }
+
+            local backend = require('seeker.backends.telescope')
+
+            state.init()
+            assert.equals('file', state.get_mode())
+
+            backend.create_grep_word_picker({})
+
+            assert.equals('file', state.get_mode())
+        end)
+    end)
 end)
