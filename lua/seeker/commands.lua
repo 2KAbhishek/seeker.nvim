@@ -7,7 +7,7 @@ local M = {}
 ---@param cursor_pos number
 ---@return string[]
 local function seeker_complete(arg_lead, cmd_line, cursor_pos)
-    local modes = { 'files', 'git_files', 'grep' }
+    local modes = { 'files', 'git_files', 'grep', 'grep_word' }
     local matches = {}
 
     for _, mode in ipairs(modes) do
@@ -33,7 +33,7 @@ M.setup = function()
     vim.api.nvim_create_user_command('Seeker', seeker_command, {
         nargs = '?',
         complete = seeker_complete,
-        desc = 'Seek Files (modes: files, git_files, grep)',
+        desc = 'Seek Files (modes: files, git_files, grep, grep_word)',
     })
 end
 

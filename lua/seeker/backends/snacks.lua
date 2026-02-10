@@ -158,4 +158,37 @@ M.create_grep_picker = function(custom_picker_opts)
     Snacks.picker.grep(picker_opts)
 end
 
+---Create a grep_word picker
+---@param custom_picker_opts table Picker options to override defaults
+M.create_grep_word_picker = function(custom_picker_opts)
+    local config = config_module.get()
+    local file_list = state.get_files()
+
+    state.set_mode('grep')
+
+    local picker_opts = vim.tbl_deep_extend('force', config.picker_opts or {}, {})
+    picker_opts = vim.tbl_deep_extend('force', picker_opts, custom_picker_opts or {})
+
+    picker_opts.actions = picker_opts.actions or {}
+    picker_opts.actions.seeker_toggle = function(picker)
+        toggle_to_file(picker, custom_picker_opts)
+    end
+
+    picker_opts.win = picker_opts.win or {}
+    picker_opts.win.input = picker_opts.win.input or {}
+    picker_opts.win.input.keys = picker_opts.win.input.keys or {}
+
+    picker_opts.win.input.keys[config.toggle_key] = {
+        'seeker_toggle',
+        mode = { 'n', 'i' },
+        desc = 'Seeker: Toggle to file mode',
+    }
+
+    if #file_list > 0 then
+        picker_opts.dirs = file_list
+    end
+
+    Snacks.picker.pick('grep_word', picker_opts)
+end
+
 return M
