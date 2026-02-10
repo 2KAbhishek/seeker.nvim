@@ -58,6 +58,7 @@ Built on top of [snacks.nvim](https://github.com/folke/snacks.nvim) picker, seek
         { '<leader>fa', ':Seeker files<CR>', desc = 'Seek Files' },
         { '<leader>ff', ':Seeker git_files<CR>', desc = 'Seek Git Files' },
         { '<leader>fg', ':Seeker grep<CR>', desc = 'Seek Grep' },
+        { '<leader>fw', ':Seeker grep_word<CR>', desc = 'Seek Grep Word' },
     },
     opts = { }, -- Required unless you call seeker.setup() manually, add your configs here
 }
@@ -71,6 +72,7 @@ Built on top of [snacks.nvim](https://github.com/folke/snacks.nvim) picker, seek
         { '<leader>fa', ':Seeker files<CR>', desc = 'Seek Files' },
         { '<leader>ff', ':Seeker git_files<CR>', desc = 'Seek Git Files' },
         { '<leader>fg', ':Seeker grep<CR>', desc = 'Seek Grep' },
+        { '<leader>fw', ':Seeker grep_word<CR>', desc = 'Seek Grep Word' },
     },
     opts = {
         picker_provider = 'telescope',
@@ -135,6 +137,7 @@ The `:Seeker` command accepts an optional mode argument with tab completion:
 - `:Seeker files` - Force files picker (all files)
 - `:Seeker git_files` - Force git_files picker (git tracked files only)
 - `:Seeker grep` - Start with grep picker directly
+- `:Seeker grep_word` - Start with grep searching for word under cursor
 
 ### Keybindings
 
@@ -143,6 +146,7 @@ The `:Seeker` command accepts an optional mode argument with tab completion:
 | `<leader>fa` | Normal            | Seek Files              |
 | `<leader>ff` | Normal            | Seek Git Files          |
 | `<leader>fg` | Normal            | Seek Grep               |
+| `<leader>fw` | Normal            | Seek Grep Word          |
 | `<C-e>`      | File Picker (n/i) | Toggle Grep / File mode |
 | `<Tab>`      | Picker (n/i)      | Multi Selection         |
 
