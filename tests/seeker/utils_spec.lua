@@ -202,4 +202,75 @@ describe('seeker.utils', function()
             assert.is_boolean(result)
         end)
     end)
+
+    describe('inverse filtering utilities', function()
+        describe('get_all_project_files', function()
+            it('should return array of files', function()
+                local files = utils.get_all_project_files()
+                assert.is_table(files)
+            end)
+
+            it('should use git ls-files in git repo', function()
+                if utils.is_git_repo() then
+                    local files = utils.get_all_project_files()
+                    assert.is_true(#files > 0)
+                end
+            end)
+        end)
+
+        describe('compute_inverse_set', function()
+            it('should exclude specified files', function()
+                local original_get_all = utils.get_all_project_files
+                utils.get_all_project_files = function()
+                    return { 'a.lua', 'b.lua', 'c.lua', 'd.lua' }
+                end
+
+                local excluded = { 'a.lua', 'c.lua' }
+                local result = utils.compute_inverse_set(excluded)
+
+                assert.same({ 'b.lua', 'd.lua' }, result)
+
+                utils.get_all_project_files = original_get_all
+            end)
+
+            it('should return all files when exclusion list is empty', function()
+                local original_get_all = utils.get_all_project_files
+                utils.get_all_project_files = function()
+                    return { 'file1.lua', 'file2.lua' }
+                end
+
+                local result = utils.compute_inverse_set({})
+                assert.same({ 'file1.lua', 'file2.lua' }, result)
+
+                utils.get_all_project_files = original_get_all
+            end)
+
+            it('should normalize paths before comparison', function()
+                local original_get_all = utils.get_all_project_files
+                utils.get_all_project_files = function()
+                    return { 'file.lua', 'other.lua' }
+                end
+
+                local excluded = { './file.lua' }
+                local result = utils.compute_inverse_set(excluded)
+
+                assert.equals(1, #result)
+                assert.equals('other.lua', result[1])
+
+                utils.get_all_project_files = original_get_all
+            end)
+
+            it('should handle nil exclusion list', function()
+                local original_get_all = utils.get_all_project_files
+                utils.get_all_project_files = function()
+                    return { 'file1.lua' }
+                end
+
+                local result = utils.compute_inverse_set(nil)
+                assert.same({ 'file1.lua' }, result)
+
+                utils.get_all_project_files = original_get_all
+            end)
+        end)
+    end)
 end)

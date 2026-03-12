@@ -108,6 +108,104 @@ local function toggle_to_file(prompt_bufnr, custom_picker_opts)
     end)
 end
 
+---Toggle from file mode to inverse grep mode
+---@param prompt_bufnr number Buffer number
+---@param custom_picker_opts table Picker options to override defaults
+local function inverse_toggle_to_grep(prompt_bufnr, custom_picker_opts)
+    local action_state = require('telescope.actions.state')
+    local actions = require('telescope.actions')
+
+    local picker = action_state.get_current_picker(prompt_bufnr)
+    local items = get_all_picker_items(prompt_bufnr, picker)
+
+    if #items == 0 then
+        return
+    end
+
+    local file_paths = extract_file_paths(items)
+
+    if #file_paths == 0 then
+        return
+    end
+
+    local normalized_paths = {}
+    for _, file in ipairs(file_paths) do
+        local rel = vim.fn.fnamemodify(file, ':~:.')
+        table.insert(normalized_paths, rel)
+    end
+
+    state.add_excluded_files(normalized_paths)
+
+    local excluded = state.get_excluded_files()
+    local inverse_files = utils.compute_inverse_set(excluded)
+
+    if #inverse_files == 0 then
+        vim.notify('All files excluded - cannot inverse grep', vim.log.levels.WARN)
+        return
+    end
+
+    local abs_paths = {}
+    for _, file in ipairs(inverse_files) do
+        local abs = vim.fn.fnamemodify(file, ':p')
+        table.insert(abs_paths, abs)
+    end
+
+    state.set_files(abs_paths)
+    state.set_mode('grep')
+
+    actions.close(prompt_bufnr)
+
+    vim.schedule(function()
+        M.create_grep_picker(custom_picker_opts)
+    end)
+end
+
+---Toggle from grep mode to inverse file mode
+---@param prompt_bufnr number Buffer number
+---@param custom_picker_opts table Picker options to override defaults
+local function inverse_toggle_to_file(prompt_bufnr, custom_picker_opts)
+    local action_state = require('telescope.actions.state')
+    local actions = require('telescope.actions')
+
+    local picker = action_state.get_current_picker(prompt_bufnr)
+    local items = get_all_picker_items(prompt_bufnr, picker)
+
+    if #items == 0 then
+        return
+    end
+
+    local file_paths = extract_file_paths(items)
+
+    if #file_paths == 0 then
+        return
+    end
+
+    local normalized_paths = {}
+    for _, file in ipairs(file_paths) do
+        local rel = vim.fn.fnamemodify(file, ':~:.')
+        table.insert(normalized_paths, rel)
+    end
+
+    state.add_excluded_files(normalized_paths)
+
+    local excluded = state.get_excluded_files()
+    local inverse_files = utils.compute_inverse_set(excluded)
+
+    if #inverse_files == 0 then
+        vim.notify('All files excluded - cannot show inverse file list', vim.log.levels.WARN)
+        return
+    end
+
+    state.set_grep_results(inverse_files)
+    state.set_mode('file')
+
+    actions.close(prompt_bufnr)
+
+    vim.schedule(function()
+        M.create_file_picker(custom_picker_opts)
+    end)
+end
+
 ---Create a file picker
 ---@param custom_picker_opts table Picker options to override defaults
 ---@param mode string? 'git_files' or 'files' (auto-detect if nil)
@@ -121,6 +219,9 @@ M.create_file_picker = function(custom_picker_opts, mode)
     opts.attach_mappings = function(prompt_bufnr, map)
         map({ 'i', 'n' }, config.toggle_key, function()
             toggle_to_grep(prompt_bufnr, custom_picker_opts)
+        end)
+        map({ 'i', 'n' }, config.inverse_toggle_key, function()
+            inverse_toggle_to_grep(prompt_bufnr, custom_picker_opts)
         end)
         return true
     end
@@ -173,6 +274,9 @@ M.create_grep_picker = function(custom_picker_opts)
         map({ 'i', 'n' }, config.toggle_key, function()
             toggle_to_file(prompt_bufnr, custom_picker_opts)
         end)
+        map({ 'i', 'n' }, config.inverse_toggle_key, function()
+            inverse_toggle_to_file(prompt_bufnr, custom_picker_opts)
+        end)
         return true
     end
 
@@ -196,6 +300,9 @@ M.create_grep_word_picker = function(custom_picker_opts)
     opts.attach_mappings = function(prompt_bufnr, map)
         map({ 'i', 'n' }, config.toggle_key, function()
             toggle_to_file(prompt_bufnr, custom_picker_opts)
+        end)
+        map({ 'i', 'n' }, config.inverse_toggle_key, function()
+            inverse_toggle_to_file(prompt_bufnr, custom_picker_opts)
         end)
         return true
     end

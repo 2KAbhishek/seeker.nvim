@@ -367,4 +367,125 @@ describe('seeker.backends', function()
             end)
         end)
     end)
+
+    describe('inverse toggle actions', function()
+        describe('snacks backend', function()
+            local backend
+
+            before_each(function()
+                package.loaded['seeker.backends.snacks'] = nil
+                package.loaded['snacks'] = {
+                    picker = {
+                        pick = function() end,
+                        grep = function() end,
+                        files = function() end,
+                        git_files = function() end,
+                    },
+                }
+                backend = require('seeker.backends.snacks')
+            end)
+
+            it('should register inverse_toggle action in file picker', function()
+                local captured_opts
+                package.loaded['snacks'].picker.files = function(opts)
+                    captured_opts = opts
+                end
+
+                backend.create_file_picker({}, 'files')
+
+                assert.is_not_nil(captured_opts.actions.seeker_inverse_toggle)
+                assert.is_function(captured_opts.actions.seeker_inverse_toggle)
+            end)
+
+            it('should register inverse_toggle action in grep picker', function()
+                local captured_opts
+                package.loaded['snacks'].picker.grep = function(opts)
+                    captured_opts = opts
+                end
+
+                backend.create_grep_picker({})
+
+                assert.is_not_nil(captured_opts.actions.seeker_inverse_toggle)
+                assert.is_function(captured_opts.actions.seeker_inverse_toggle)
+            end)
+
+            it('should configure inverse_toggle_key keybinding in file picker', function()
+                config_module.setup({ inverse_toggle_key = '<C-S-e>' })
+                local captured_opts
+                package.loaded['snacks'].picker.files = function(opts)
+                    captured_opts = opts
+                end
+
+                backend.create_file_picker({}, 'files')
+
+                assert.is_not_nil(captured_opts.win.input.keys['<C-S-e>'])
+                assert.equals('seeker_inverse_toggle', captured_opts.win.input.keys['<C-S-e>'][1])
+            end)
+
+            it('should configure inverse_toggle_key keybinding in grep picker', function()
+                config_module.setup({ inverse_toggle_key = '<C-S-e>' })
+                local captured_opts
+                package.loaded['snacks'].picker.grep = function(opts)
+                    captured_opts = opts
+                end
+
+                backend.create_grep_picker({})
+
+                assert.is_not_nil(captured_opts.win.input.keys['<C-S-e>'])
+                assert.equals('seeker_inverse_toggle', captured_opts.win.input.keys['<C-S-e>'][1])
+            end)
+        end)
+
+        describe('telescope backend', function()
+            local backend
+
+            before_each(function()
+                package.loaded['seeker.backends.telescope'] = nil
+                package.loaded['telescope.builtin'] = {
+                    find_files = function() end,
+                    git_files = function() end,
+                    live_grep = function() end,
+                    grep_string = function() end,
+                }
+                package.loaded['telescope.actions'] = {
+                    close = function() end,
+                }
+                package.loaded['telescope.actions.state'] = {}
+                package.loaded['telescope.actions.utils'] = {}
+                package.loaded['telescope.pickers'] = {}
+                package.loaded['telescope.finders'] = {}
+                package.loaded['telescope.config'] = {
+                    values = {},
+                }
+                package.loaded['telescope.make_entry'] = {}
+                backend = require('seeker.backends.telescope')
+            end)
+
+            it('should register inverse_toggle mapping in file picker', function()
+                config_module.setup({ inverse_toggle_key = '<C-S-e>' })
+                local attach_mappings
+                package.loaded['telescope.builtin'].find_files = function(opts)
+                    attach_mappings = opts.attach_mappings
+                end
+
+                backend.create_file_picker({}, 'files')
+
+                assert.is_not_nil(attach_mappings)
+                assert.is_function(attach_mappings)
+            end)
+
+            it('should register inverse_toggle mapping in grep picker', function()
+                config_module.setup({ inverse_toggle_key = '<C-S-e>' })
+                local attach_mappings
+                package.loaded['telescope.builtin'].live_grep = function(opts)
+                    attach_mappings = opts.attach_mappings
+                end
+
+                backend.create_grep_picker({})
+
+                assert.is_not_nil(attach_mappings)
+                assert.is_function(attach_mappings)
+            end)
+        end)
+    end)
 end)

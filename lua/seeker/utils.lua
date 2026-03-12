@@ -133,4 +133,51 @@ M.get_picker_items = function(picker)
     return items or {}
 end
 
+---Get all files in the project
+---Uses git ls-files for git repos, find for non-git
+---@return string[] All file paths (relative)
+M.get_all_project_files = function()
+    if M.is_git_repo() then
+        local output = vim.fn.systemlist('git ls-files')
+        return output
+    else
+        local cwd = vim.fn.getcwd()
+        local cmd = string.format('find %s -type f -not -path "*/\\.git/*"', vim.fn.shellescape(cwd))
+        local output = vim.fn.systemlist(cmd)
+        local relative = {}
+        for _, path in ipairs(output) do
+            local rel = vim.fn.fnamemodify(path, ':~:.')
+            table.insert(relative, rel)
+        end
+        return relative
+    end
+end
+
+---Compute inverse file set (all files minus excluded files)
+---@param excluded_files string[] Files to exclude
+---@return string[] Files NOT in excluded list
+M.compute_inverse_set = function(excluded_files)
+    if not excluded_files or #excluded_files == 0 then
+        return M.get_all_project_files()
+    end
+
+    local all_files = M.get_all_project_files()
+    local excluded_set = {}
+
+    for _, file in ipairs(excluded_files) do
+        local normalized = vim.fn.fnamemodify(file, ':~:.')
+        excluded_set[normalized] = true
+    end
+
+    local inverse_files = {}
+    for _, file in ipairs(all_files) do
+        local normalized = vim.fn.fnamemodify(file, ':~:.')
+        if not excluded_set[normalized] then
+            table.insert(inverse_files, file)
+        end
+    end
+
+    return inverse_files
+end
+
 return M

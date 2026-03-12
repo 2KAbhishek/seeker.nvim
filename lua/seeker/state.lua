@@ -5,6 +5,7 @@ local M = {}
 ---@field mode string Current mode ('file' | 'grep')
 ---@field file_list string[] File paths to search (for grep mode)
 ---@field grep_files string[] Files with grep matches (for file mode)
+---@field excluded_files string[] Accumulated excluded files (for inverse filtering)
 ---@field history table[] Stack of refinements for potential undo
 
 ---@type StateData
@@ -12,6 +13,7 @@ local state = {
     mode = 'file',
     file_list = {},
     grep_files = {},
+    excluded_files = {},
     history = {},
 }
 
@@ -20,6 +22,7 @@ M.init = function()
     state.mode = 'file'
     state.file_list = {}
     state.grep_files = {}
+    state.excluded_files = {}
     state.history = {}
 end
 
@@ -79,6 +82,39 @@ end
 ---@return StateData
 M.get_state = function()
     return vim.deepcopy(state)
+end
+
+---Add files to exclusion list (accumulates)
+---@param paths string[] File paths to exclude
+M.add_excluded_files = function(paths)
+    if not paths or #paths == 0 then
+        return
+    end
+
+    local normalized_set = {}
+    for _, file in ipairs(state.excluded_files) do
+        local norm = vim.fn.fnamemodify(file, ':~:.')
+        normalized_set[norm] = true
+    end
+
+    for _, path in ipairs(paths) do
+        local norm = vim.fn.fnamemodify(path, ':~:.')
+        if not normalized_set[norm] then
+            table.insert(state.excluded_files, norm)
+            normalized_set[norm] = true
+        end
+    end
+end
+
+---Get accumulated excluded files
+---@return string[]
+M.get_excluded_files = function()
+    return state.excluded_files
+end
+
+---Clear excluded files
+M.clear_excluded_files = function()
+    state.excluded_files = {}
 end
 
 return M

@@ -33,6 +33,7 @@ Built on top of [snacks.nvim](https://github.com/folke/snacks.nvim) picker, seek
 ## ✨ Features
 
 - **Progressive Refinement**: Each mode switch narrows down results (File → Grep → File progressively filters)
+- **Inverse Filtering**: Exclude files and search everywhere else - perfect for focusing on unreviewed code or finding gaps
 - **Seamless Mode Switching**: Toggle between file and grep modes with a single keybinding
 - **Smart File Selection**: Supports both Tab-selection and automatic filtering of visible results
 - **Configurable**: Customize toggle keys, picker options, and more
@@ -97,15 +98,52 @@ Built on top of [snacks.nvim](https://github.com/folke/snacks.nvim) picker, seek
 - If no files are selected, all visible filtered results are used
 - Works in both file and grep modes
 
+### Inverse Filtering Workflow
+
+Progressively exclude files and search everywhere else:
+
+1. **Select Files to Exclude**: Start any picker and filter/select files
+2. **Inverse Toggle**: Press `<C-x>` (or your configured `inverse_toggle_key`)
+3. **Search Elsewhere**: Grep searches in ALL OTHER files (excluding selected)
+4. **Keep Excluding**: Press `<C-x>` again to ADD more exclusions (accumulates!)
+5. **Continue**: Exclusions accumulate until you start a new `:Seeker` session
+
+**Progressive Accumulation Example:**
+```
+Step 1: Filter "test" → select 5 test files → <C-x>
+   → Grep searches in ALL files EXCEPT {5 test files}
+
+Step 2: Find matches in 10 files → select 3 reviewed files → <C-x>
+   → File picker shows ALL files EXCEPT {5 test + 3 reviewed = 8 files}
+
+Step 3: Select 2 more error files → <C-x>
+   → Grep searches in ALL files EXCEPT {5 test + 3 reviewed + 2 error = 10 files}
+
+Result: Progressively built exclusion list of 10 files!
+```
+
+**Example Use Cases:**
+- **Iterative review**: Mark files as reviewed, progressively narrow unreviewed set
+- **Multi-criteria exclusion**: Exclude tests, then docs, then vendor files
+- **Focus workflow**: Remove distractions incrementally until core files remain
+- **Gap analysis**: Exclude files with pattern, see what's left without it
+
+**How It Works:**
+- **Accumulates**: Each `<C-x>` ADDS to exclusion list (doesn't replace)
+- **Auto-clears**: Starting `:Seeker` command resets exclusions
+- **With Tab selection**: Excludes only Tab-selected files
+- **Without selection**: Excludes ALL visible filtered results
+
 ### Configuration
 
 seeker.nvim can be configured using the following options:
 
 ```lua
 require('seeker').setup({
-    picker_provider = 'snacks', -- Picker provider: 'snacks' or 'telescope' (default: 'snacks')
-    toggle_key = '<C-e>',       -- Key to toggle between modes (default)
-    picker_opts = {},           -- Options passed to the picker provider (optional)
+    picker_provider = 'snacks',   -- Picker provider: 'snacks' or 'telescope' (default: 'snacks')
+    toggle_key = '<C-e>',          -- Key to toggle between modes (default)
+    inverse_toggle_key = '<C-x>',  -- Key for inverse toggle - exclude and search elsewhere (default)
+    picker_opts = {},              -- Options passed to the picker provider (optional)
 })
 ```
 
@@ -141,14 +179,15 @@ The `:Seeker` command accepts an optional mode argument with tab completion:
 
 ### Keybindings
 
-| Keybinding   | Mode              | Description             |
-| ------------ | ----------------- | ----------------------- |
-| `<leader>fa` | Normal            | Seek Files              |
-| `<leader>ff` | Normal            | Seek Git Files          |
-| `<leader>fg` | Normal            | Seek Grep               |
-| `<leader>fw` | Normal            | Seek Grep Word          |
-| `<C-e>`      | File Picker (n/i) | Toggle Grep / File mode |
-| `<Tab>`      | Picker (n/i)      | Multi Selection         |
+| Keybinding   | Mode              | Description                         |
+| ------------ | ----------------- | ----------------------------------- |
+| `<leader>fa` | Normal            | Seek Files                          |
+| `<leader>ff` | Normal            | Seek Git Files                      |
+| `<leader>fg` | Normal            | Seek Grep                           |
+| `<leader>fw` | Normal            | Seek Grep Word                      |
+| `<C-e>`      | File Picker (n/i) | Toggle Grep / File mode             |
+| `<C-x>`      | File Picker (n/i) | Inverse Toggle - accumulate exclude |
+| `<Tab>`      | Picker (n/i)      | Multi Selection                     |
 
 You can customize the toggle key via config, and others using lazy's key definitions.
 
@@ -182,7 +221,28 @@ Seeker uses a stateful approach to maintain context across mode switches:
 
 - `state.file_list`: Files to search in grep mode
 - `state.grep_files`: Files with matches (shown in file mode)
+- `state.excluded_files`: Accumulated files to exclude (for inverse filtering)
 - `state.mode`: Current mode ('file' | 'grep')
+
+### Inverse Filtering Accumulation
+
+Inverse filtering uses stateful exclusion tracking:
+
+1. **State variable**: `excluded_files` list accumulates across inverse toggles
+2. **Auto-clear**: Reset when `:Seeker` command is invoked
+3. **Add operation**: Each inverse toggle ADDS to `excluded_files`, never replaces
+4. **Inverse computation**: Excludes all accumulated files from the working set
+
+**Example state progression:**
+```
+Initial: excluded_files = []
+
+After first <C-x>: excluded_files = [test1, test2, test3]
+After second <C-x>: excluded_files = [test1, test2, test3, reviewed1, reviewed2]
+After third <C-x>: excluded_files = [test1, test2, test3, reviewed1, reviewed2, error1]
+
+After :Seeker: excluded_files = []  (auto-cleared)
+```
 
 ### Smart Path Handling
 
