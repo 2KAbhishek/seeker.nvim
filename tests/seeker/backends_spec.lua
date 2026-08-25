@@ -78,6 +78,22 @@ describe('seeker.backends', function()
 
                 assert.is_true(called)
             end)
+
+            it('should configure exclude toggle action and key binding', function()
+                local captured_opts
+                package.loaded['snacks'].picker.grep = function(opts)
+                    captured_opts = opts
+                end
+
+                backend.create_grep_picker({})
+
+                local exclude_key = config_module.get().exclude_toggle_key
+                assert.is_not_nil(captured_opts.actions)
+                assert.is_not_nil(captured_opts.actions.seeker_exclude_toggle)
+                assert.is_function(captured_opts.actions.seeker_exclude_toggle)
+                assert.is_not_nil(captured_opts.win.input.keys[exclude_key])
+                assert.equals('seeker_exclude_toggle', captured_opts.win.input.keys[exclude_key][1])
+            end)
         end)
 
         describe('create_file_picker', function()
@@ -93,6 +109,22 @@ describe('seeker.backends', function()
                 assert.is_not_nil(captured_opts.actions)
                 assert.is_not_nil(captured_opts.actions.seeker_toggle)
                 assert.is_function(captured_opts.actions.seeker_toggle)
+            end)
+
+            it('should configure exclude toggle action and key binding', function()
+                local captured_opts
+                package.loaded['snacks'].picker.files = function(opts)
+                    captured_opts = opts
+                end
+
+                backend.create_file_picker({}, 'files')
+
+                local exclude_key = config_module.get().exclude_toggle_key
+                assert.is_not_nil(captured_opts.actions)
+                assert.is_not_nil(captured_opts.actions.seeker_exclude_toggle)
+                assert.is_function(captured_opts.actions.seeker_exclude_toggle)
+                assert.is_not_nil(captured_opts.win.input.keys[exclude_key])
+                assert.equals('seeker_exclude_toggle', captured_opts.win.input.keys[exclude_key][1])
             end)
 
             it('should use git_files when mode is git_files', function()
@@ -210,6 +242,22 @@ describe('seeker.backends', function()
                 backend.create_grep_word_picker({})
 
                 assert.equals('grep_word', captured_source)
+            end)
+
+            it('should configure exclude toggle action and key binding', function()
+                local captured_opts
+                package.loaded['snacks'].picker.pick = function(source, opts)
+                    captured_opts = opts
+                end
+
+                backend.create_grep_word_picker({})
+
+                local exclude_key = config_module.get().exclude_toggle_key
+                assert.is_not_nil(captured_opts.actions)
+                assert.is_not_nil(captured_opts.actions.seeker_exclude_toggle)
+                assert.is_function(captured_opts.actions.seeker_exclude_toggle)
+                assert.is_not_nil(captured_opts.win.input.keys[exclude_key])
+                assert.equals('seeker_exclude_toggle', captured_opts.win.input.keys[exclude_key][1])
             end)
         end)
     end)
