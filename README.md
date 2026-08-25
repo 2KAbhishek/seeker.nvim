@@ -58,7 +58,7 @@ Built on top of [snacks.nvim](https://github.com/folke/snacks.nvim) picker, seek
         { '<leader>fa', ':Seeker files<CR>', desc = 'Seek Files' },
         { '<leader>ff', ':Seeker git_files<CR>', desc = 'Seek Git Files' },
         { '<leader>fg', ':Seeker grep<CR>', desc = 'Seek Grep' },
-        { '<leader>fw', ':Seeker grep_word<CR>', desc = 'Seek Grep Word' },
+        { '<leader>fw', ':Seeker grep_word<CR>', mode = { 'n', 'x' }, desc = 'Seek Grep Word' },
     },
     opts = { }, -- Required unless you call seeker.setup() manually, add your configs here
 }
@@ -72,7 +72,7 @@ Built on top of [snacks.nvim](https://github.com/folke/snacks.nvim) picker, seek
         { '<leader>fa', ':Seeker files<CR>', desc = 'Seek Files' },
         { '<leader>ff', ':Seeker git_files<CR>', desc = 'Seek Git Files' },
         { '<leader>fg', ':Seeker grep<CR>', desc = 'Seek Grep' },
-        { '<leader>fw', ':Seeker grep_word<CR>', desc = 'Seek Grep Word' },
+        { '<leader>fw', ':Seeker grep_word<CR>', mode = { 'n', 'x' }, desc = 'Seek Grep Word' },
     },
     opts = {
         picker_provider = 'telescope',
@@ -91,10 +91,11 @@ Built on top of [snacks.nvim](https://github.com/folke/snacks.nvim) picker, seek
 5. **Refine Files**: Press `<C-e>` again to see only files with matches
 6. **Continue Refining**: Keep switching between modes to progressively narrow results
 
-### Multi-Selection
+### Multi-Selection & Exclusion
 
 - Press `<Tab>` to select specific files to search before switching modes
 - If no files are selected, all visible filtered results are used
+- Press `<C-x>` to **exclude** selected files (or current item under cursor) and toggle mode with all remaining files
 - Works in both file and grep modes
 
 ### Configuration
@@ -103,9 +104,10 @@ seeker.nvim can be configured using the following options:
 
 ```lua
 require('seeker').setup({
-    picker_provider = 'snacks', -- Picker provider: 'snacks' or 'telescope' (default: 'snacks')
-    toggle_key = '<C-e>',       -- Key to toggle between modes (default)
-    picker_opts = {},           -- Options passed to the picker provider (optional)
+    picker_provider = 'snacks',    -- Picker provider: 'snacks' or 'telescope' (default: 'snacks')
+    toggle_key = '<C-e>',          -- Key to toggle between modes (default)
+    exclude_toggle_key = '<C-x>',  -- Key to toggle between modes excluding selected files (default)
+    picker_opts = {},              -- Options passed to the picker provider (optional)
 })
 ```
 
@@ -137,18 +139,19 @@ The `:Seeker` command accepts an optional mode argument with tab completion:
 - `:Seeker files` - Force files picker (all files)
 - `:Seeker git_files` - Force git_files picker (git tracked files only)
 - `:Seeker grep` - Start with grep picker directly
-- `:Seeker grep_word` - Start with grep searching for word under cursor
+- `:Seeker grep_word` - Start with grep searching for word under cursor (or visual selection when invoked from visual mode)
 
 ### Keybindings
 
-| Keybinding   | Mode              | Description             |
-| ------------ | ----------------- | ----------------------- |
-| `<leader>fa` | Normal            | Seek Files              |
-| `<leader>ff` | Normal            | Seek Git Files          |
-| `<leader>fg` | Normal            | Seek Grep               |
-| `<leader>fw` | Normal            | Seek Grep Word          |
-| `<C-e>`      | File Picker (n/i) | Toggle Grep / File mode |
-| `<Tab>`      | Picker (n/i)      | Multi Selection         |
+| Keybinding   | Mode           | Description                             |
+| ------------ | -------------- | --------------------------------------- |
+| `<leader>fa` | Normal         | Seek Files                              |
+| `<leader>ff` | Normal         | Seek Git Files                          |
+| `<leader>fg` | Normal         | Seek Grep                               |
+| `<leader>fw` | Normal, Visual | Seek Grep Word / Selection              |
+| `<C-e>`      | Picker (n/i)   | Toggle Grep / File mode                 |
+| `<C-x>`      | Picker (n/i)   | Toggle Grep / File mode (Exclude files) |
+| `<Tab>`      | Picker (n/i)   | Multi Selection                         |
 
 You can customize the toggle key via config, and others using lazy's key definitions.
 
