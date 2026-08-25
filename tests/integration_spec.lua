@@ -95,6 +95,34 @@ describe('seeker integration', function()
 
             assert.equals(1, #state.get_grep_results())
         end)
+
+        it('should handle exclusion workflow from file to grep', function()
+            state.init()
+
+            local all_files = { 'file1.lua', 'file2.lua', 'file3.lua' }
+            local excluded = { 'file3.lua' }
+            local remaining = utils.filter_excluded_paths(all_files, excluded)
+
+            state.set_files(remaining)
+            state.set_mode('grep')
+
+            assert.equals(2, #state.get_files())
+            assert.same({ 'file1.lua', 'file2.lua' }, state.get_files())
+        end)
+
+        it('should handle exclusion workflow from grep to file', function()
+            state.init()
+
+            local grep_files = { 'file1.lua', 'file2.lua', 'file3.lua' }
+            local excluded = { 'file2.lua' }
+            local remaining = utils.filter_excluded_paths(grep_files, excluded)
+
+            state.set_grep_results(remaining)
+            state.set_mode('file')
+
+            assert.equals(2, #state.get_grep_results())
+            assert.same({ 'file1.lua', 'file3.lua' }, state.get_grep_results())
+        end)
     end)
 
     describe('edge cases', function()
