@@ -116,6 +116,53 @@ M.to_relative_paths = function(paths, cwd)
     return relative
 end
 
+---Get visual selection text
+---@return string? Visual selection text or nil if not available
+M.get_visual_selection = function()
+    local mode = vim.fn.mode()
+    local is_visual = mode:match('^[vV\22]') ~= nil
+
+    local start_pos, end_pos
+    if is_visual then
+        start_pos = vim.fn.getpos('v')
+        end_pos = vim.fn.getpos('.')
+    else
+        start_pos = vim.fn.getpos("'<")
+        end_pos = vim.fn.getpos("'>")
+    end
+
+    local start_row, start_col = start_pos[2], start_pos[3]
+    local end_row, end_col = end_pos[2], end_pos[3]
+
+    if start_row == 0 or end_row == 0 then
+        return nil
+    end
+
+    if start_row > end_row or (start_row == end_row and start_col > end_col) then
+        start_row, end_row = end_row, start_row
+        start_col, end_col = end_col, start_col
+    end
+
+    local lines = vim.api.nvim_buf_get_lines(0, start_row - 1, end_row, false)
+    if #lines == 0 then
+        return nil
+    end
+
+    if #lines == 1 then
+        lines[1] = string.sub(lines[1], start_col, end_col)
+    else
+        lines[1] = string.sub(lines[1], start_col)
+        lines[#lines] = string.sub(lines[#lines], 1, end_col)
+    end
+
+    local text = table.concat(lines, '\n')
+    if text == '' then
+        return nil
+    end
+
+    return text
+end
+
 ---Get items from picker (selected or all filtered)
 ---@param picker table Snacks picker object
 ---@return table[] Items

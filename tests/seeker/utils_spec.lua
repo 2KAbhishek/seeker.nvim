@@ -202,4 +202,102 @@ describe('seeker.utils', function()
             assert.is_boolean(result)
         end)
     end)
+
+    describe('get_visual_selection', function()
+        it('should return nil when no visual selection marks are set', function()
+            local orig_getpos = vim.fn.getpos
+            vim.fn.getpos = function(mark)
+                return { 0, 0, 0, 0 }
+            end
+
+            local result = utils.get_visual_selection()
+            assert.is_nil(result)
+
+            vim.fn.getpos = orig_getpos
+        end)
+
+        it('should extract single line visual selection', function()
+            local orig_getpos = vim.fn.getpos
+            local orig_mode = vim.fn.mode
+            local orig_lines = vim.api.nvim_buf_get_lines
+
+            vim.fn.mode = function()
+                return 'n'
+            end
+            vim.fn.getpos = function(mark)
+                if mark == "'<" then
+                    return { 0, 1, 7, 0 }
+                elseif mark == "'>" then
+                    return { 0, 1, 11, 0 }
+                end
+                return { 0, 0, 0, 0 }
+            end
+            vim.api.nvim_buf_get_lines = function(buf, s, e, strict)
+                return { 'hello world foo' }
+            end
+
+            local result = utils.get_visual_selection()
+            assert.equals('world', result)
+
+            vim.fn.getpos = orig_getpos
+            vim.fn.mode = orig_mode
+            vim.api.nvim_buf_get_lines = orig_lines
+        end)
+
+        it('should extract visual selection in active visual mode', function()
+            local orig_getpos = vim.fn.getpos
+            local orig_mode = vim.fn.mode
+            local orig_lines = vim.api.nvim_buf_get_lines
+
+            vim.fn.mode = function()
+                return 'v'
+            end
+            vim.fn.getpos = function(mark)
+                if mark == 'v' then
+                    return { 0, 1, 1, 0 }
+                elseif mark == '.' then
+                    return { 0, 1, 5, 0 }
+                end
+                return { 0, 0, 0, 0 }
+            end
+            vim.api.nvim_buf_get_lines = function(buf, s, e, strict)
+                return { 'hello world' }
+            end
+
+            local result = utils.get_visual_selection()
+            assert.equals('hello', result)
+
+            vim.fn.getpos = orig_getpos
+            vim.fn.mode = orig_mode
+            vim.api.nvim_buf_get_lines = orig_lines
+        end)
+
+        it('should extract multi-line visual selection', function()
+            local orig_getpos = vim.fn.getpos
+            local orig_mode = vim.fn.mode
+            local orig_lines = vim.api.nvim_buf_get_lines
+
+            vim.fn.mode = function()
+                return 'n'
+            end
+            vim.fn.getpos = function(mark)
+                if mark == "'<" then
+                    return { 0, 1, 7, 0 }
+                elseif mark == "'>" then
+                    return { 0, 2, 5, 0 }
+                end
+                return { 0, 0, 0, 0 }
+            end
+            vim.api.nvim_buf_get_lines = function(buf, s, e, strict)
+                return { 'hello world', 'apple banana' }
+            end
+
+            local result = utils.get_visual_selection()
+            assert.equals('world\napple', result)
+
+            vim.fn.getpos = orig_getpos
+            vim.fn.mode = orig_mode
+            vim.api.nvim_buf_get_lines = orig_lines
+        end)
+    end)
 end)
