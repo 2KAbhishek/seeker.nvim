@@ -78,6 +78,56 @@ local function toggle_to_grep(prompt_bufnr, custom_picker_opts)
     end)
 end
 
+---Toggle from file mode to grep mode excluding selected files
+---@param prompt_bufnr number Buffer number
+---@param custom_picker_opts table Picker options to override defaults
+local function toggle_to_grep_excluded(prompt_bufnr, custom_picker_opts)
+    local action_state = require('telescope.actions.state')
+    local actions = require('telescope.actions')
+    local action_utils = require('telescope.actions.utils')
+
+    local picker = action_state.get_current_picker(prompt_bufnr)
+    local all_items = {}
+    action_utils.map_entries(prompt_bufnr, function(entry)
+        table.insert(all_items, entry)
+    end)
+
+    if #all_items == 0 then
+        return
+    end
+
+    local multi = picker:get_multi_selection()
+    local excluded_items
+    if #multi > 0 then
+        excluded_items = multi
+    else
+        local selected = action_state.get_selected_entry()
+        excluded_items = selected and { selected } or {}
+    end
+
+    if #excluded_items == 0 then
+        return
+    end
+
+    local all_paths = extract_file_paths(all_items)
+    local excluded_paths = extract_file_paths(excluded_items)
+    local remaining_paths = utils.filter_excluded_paths(all_paths, excluded_paths)
+
+    if #remaining_paths == 0 then
+        vim.notify('seeker.nvim: No files remaining after exclusion', vim.log.levels.WARN)
+        return
+    end
+
+    state.set_files(remaining_paths)
+    state.set_mode('grep')
+
+    actions.close(prompt_bufnr)
+
+    vim.schedule(function()
+        M.create_grep_picker(custom_picker_opts)
+    end)
+end
+
 ---Toggle from grep mode to file mode
 ---@param prompt_bufnr number Buffer number
 ---@param custom_picker_opts table Picker options to override defaults
@@ -108,6 +158,56 @@ local function toggle_to_file(prompt_bufnr, custom_picker_opts)
     end)
 end
 
+---Toggle from grep mode to file mode excluding selected files
+---@param prompt_bufnr number Buffer number
+---@param custom_picker_opts table Picker options to override defaults
+local function toggle_to_file_excluded(prompt_bufnr, custom_picker_opts)
+    local action_state = require('telescope.actions.state')
+    local actions = require('telescope.actions')
+    local action_utils = require('telescope.actions.utils')
+
+    local picker = action_state.get_current_picker(prompt_bufnr)
+    local all_items = {}
+    action_utils.map_entries(prompt_bufnr, function(entry)
+        table.insert(all_items, entry)
+    end)
+
+    if #all_items == 0 then
+        return
+    end
+
+    local multi = picker:get_multi_selection()
+    local excluded_items
+    if #multi > 0 then
+        excluded_items = multi
+    else
+        local selected = action_state.get_selected_entry()
+        excluded_items = selected and { selected } or {}
+    end
+
+    if #excluded_items == 0 then
+        return
+    end
+
+    local all_paths = extract_file_paths(all_items)
+    local excluded_paths = extract_file_paths(excluded_items)
+    local remaining_paths = utils.filter_excluded_paths(all_paths, excluded_paths)
+
+    if #remaining_paths == 0 then
+        vim.notify('seeker.nvim: No files remaining after exclusion', vim.log.levels.WARN)
+        return
+    end
+
+    state.set_grep_results(remaining_paths)
+    state.set_mode('file')
+
+    actions.close(prompt_bufnr)
+
+    vim.schedule(function()
+        M.create_file_picker(custom_picker_opts)
+    end)
+end
+
 ---Create a file picker
 ---@param custom_picker_opts table Picker options to override defaults
 ---@param mode string? 'git_files' or 'files' (auto-detect if nil)
@@ -122,6 +222,11 @@ M.create_file_picker = function(custom_picker_opts, mode)
         map({ 'i', 'n' }, config.toggle_key, function()
             toggle_to_grep(prompt_bufnr, custom_picker_opts)
         end)
+        if config.exclude_toggle_key then
+            map({ 'i', 'n' }, config.exclude_toggle_key, function()
+                toggle_to_grep_excluded(prompt_bufnr, custom_picker_opts)
+            end)
+        end
         return true
     end
 
@@ -173,6 +278,11 @@ M.create_grep_picker = function(custom_picker_opts)
         map({ 'i', 'n' }, config.toggle_key, function()
             toggle_to_file(prompt_bufnr, custom_picker_opts)
         end)
+        if config.exclude_toggle_key then
+            map({ 'i', 'n' }, config.exclude_toggle_key, function()
+                toggle_to_file_excluded(prompt_bufnr, custom_picker_opts)
+            end)
+        end
         return true
     end
 
@@ -197,6 +307,11 @@ M.create_grep_word_picker = function(custom_picker_opts)
         map({ 'i', 'n' }, config.toggle_key, function()
             toggle_to_file(prompt_bufnr, custom_picker_opts)
         end)
+        if config.exclude_toggle_key then
+            map({ 'i', 'n' }, config.exclude_toggle_key, function()
+                toggle_to_file_excluded(prompt_bufnr, custom_picker_opts)
+            end)
+        end
         return true
     end
 

@@ -313,6 +313,31 @@ describe('seeker.backends', function()
 
                 assert.is_true(called)
             end)
+
+            it('should map exclude_toggle_key in attach_mappings', function()
+                local captured_opts
+                package.loaded['telescope.builtin'].live_grep = function(opts)
+                    captured_opts = opts
+                end
+
+                backend.create_grep_picker({})
+
+                local mapped = {}
+                local mock_map = function(modes, key, fn)
+                    table.insert(mapped, { modes = modes, key = key })
+                end
+
+                captured_opts.attach_mappings(1, mock_map)
+
+                local exclude_key = config_module.get().exclude_toggle_key
+                local has_exclude_key = false
+                for _, m in ipairs(mapped) do
+                    if m.key == exclude_key then
+                        has_exclude_key = true
+                    end
+                end
+                assert.is_true(has_exclude_key)
+            end)
         end)
 
         describe('create_file_picker', function()
@@ -327,6 +352,31 @@ describe('seeker.backends', function()
                 assert.is_not_nil(captured_opts)
                 assert.is_not_nil(captured_opts.attach_mappings)
                 assert.is_function(captured_opts.attach_mappings)
+            end)
+
+            it('should map exclude_toggle_key in attach_mappings', function()
+                local captured_opts
+                package.loaded['telescope.builtin'].find_files = function(opts)
+                    captured_opts = opts
+                end
+
+                backend.create_file_picker({}, 'files')
+
+                local mapped = {}
+                local mock_map = function(modes, key, fn)
+                    table.insert(mapped, { modes = modes, key = key })
+                end
+
+                captured_opts.attach_mappings(1, mock_map)
+
+                local exclude_key = config_module.get().exclude_toggle_key
+                local has_exclude_key = false
+                for _, m in ipairs(mapped) do
+                    if m.key == exclude_key then
+                        has_exclude_key = true
+                    end
+                end
+                assert.is_true(has_exclude_key)
             end)
 
             it('should use git_files when mode is git_files', function()
@@ -412,6 +462,31 @@ describe('seeker.backends', function()
                 backend.create_grep_word_picker({})
 
                 assert.is_true(called)
+            end)
+
+            it('should map exclude_toggle_key in attach_mappings', function()
+                local captured_opts
+                package.loaded['telescope.builtin'].grep_string = function(opts)
+                    captured_opts = opts
+                end
+
+                backend.create_grep_word_picker({})
+
+                local mapped = {}
+                local mock_map = function(modes, key, fn)
+                    table.insert(mapped, { modes = modes, key = key })
+                end
+
+                captured_opts.attach_mappings(1, mock_map)
+
+                local exclude_key = config_module.get().exclude_toggle_key
+                local has_exclude_key = false
+                for _, m in ipairs(mapped) do
+                    if m.key == exclude_key then
+                        has_exclude_key = true
+                    end
+                end
+                assert.is_true(has_exclude_key)
             end)
         end)
     end)
