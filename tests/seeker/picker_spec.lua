@@ -145,6 +145,75 @@ describe('seeker.picker', function()
                 }
             })
         end)
+
+        it('should detect visual mode and pass search text to grep_word picker', function()
+            local orig_mode = vim.fn.mode
+            local orig_getpos = vim.fn.getpos
+            local orig_lines = vim.api.nvim_buf_get_lines
+
+            vim.fn.mode = function()
+                return 'v'
+            end
+            vim.fn.getpos = function(mark)
+                if mark == 'v' then
+                    return { 0, 1, 1, 0 }
+                elseif mark == '.' then
+                    return { 0, 1, 6, 0 }
+                end
+                return { 0, 0, 0, 0 }
+            end
+            vim.api.nvim_buf_get_lines = function(buf, s, e, strict)
+                return { 'search_query' }
+            end
+
+            local mock_backend = {
+                create_file_picker = function() end,
+                create_grep_picker = function() end,
+                create_grep_word_picker = function(custom_picker_opts)
+                    assert.equals('search', custom_picker_opts.search)
+                end
+            }
+
+            backends.get_backend = function()
+                return mock_backend
+            end
+
+            picker.seek({
+                mode = 'grep_word'
+            })
+
+            vim.fn.mode = orig_mode
+            vim.fn.getpos = orig_getpos
+            vim.api.nvim_buf_get_lines = orig_lines
+        end)
+
+        it('should not overwrite existing search option in visual mode', function()
+            local orig_mode = vim.fn.mode
+            vim.fn.mode = function()
+                return 'v'
+            end
+
+            local mock_backend = {
+                create_file_picker = function() end,
+                create_grep_picker = function() end,
+                create_grep_word_picker = function(custom_picker_opts)
+                    assert.equals('explicit_search', custom_picker_opts.search)
+                end
+            }
+
+            backends.get_backend = function()
+                return mock_backend
+            end
+
+            picker.seek({
+                mode = 'grep_word',
+                picker_opts = {
+                    search = 'explicit_search'
+                }
+            })
+
+            vim.fn.mode = orig_mode
+        end)
     end)
 
     describe('backend state isolation', function()

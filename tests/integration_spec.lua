@@ -123,4 +123,51 @@ describe('seeker integration', function()
             assert.same({}, paths)
         end)
     end)
+
+    describe('command integration', function()
+        it('should pass visual selection to grep_word command when range is provided', function()
+            local seeker = require('seeker')
+            seeker.setup({})
+
+            local orig_getpos = vim.fn.getpos
+            local orig_lines = vim.api.nvim_buf_get_lines
+            local orig_mode = vim.fn.mode
+
+            vim.fn.mode = function()
+                return 'n'
+            end
+            vim.fn.getpos = function(mark)
+                if mark == "'<" then
+                    return { 0, 1, 1, 0 }
+                elseif mark == "'>" then
+                    return { 0, 1, 11, 0 }
+                end
+                return { 0, 0, 0, 0 }
+            end
+            vim.api.nvim_buf_set_lines(0, 0, -1, false, { 'test_target' })
+            vim.api.nvim_buf_set_mark(0, '<', 1, 0, {})
+            vim.api.nvim_buf_set_mark(0, '>', 1, 10, {})
+
+            local captured_opts
+            package.loaded['snacks'] = {
+                picker = {
+                    pick = function(source, opts)
+                        captured_opts = opts
+                    end,
+                    files = function() end,
+                    git_files = function() end,
+                    grep = function() end,
+                }
+            }
+
+            vim.cmd("'<,'>Seeker grep_word")
+
+            assert.is_not_nil(captured_opts)
+            assert.equals('test_target', captured_opts.search)
+
+            vim.fn.getpos = orig_getpos
+            vim.api.nvim_buf_get_lines = orig_lines
+            vim.fn.mode = orig_mode
+        end)
+    end)
 end)

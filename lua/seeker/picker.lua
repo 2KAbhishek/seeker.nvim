@@ -14,6 +14,16 @@ M.seek = function(opts)
     local mode = opts.mode
     local picker_opts = opts.picker_opts or {}
 
+    if mode == 'grep_word' and not picker_opts.search then
+        local mode_str = vim.fn.mode()
+        if mode_str:match('^[vV\22]') then
+            local visual_text = require('seeker.utils').get_visual_selection()
+            if visual_text and visual_text ~= '' then
+                picker_opts = vim.tbl_deep_extend('force', picker_opts, { search = visual_text })
+            end
+        end
+    end
+
     if mode == 'grep' then
         backend.create_grep_picker(picker_opts)
     elseif mode == 'grep_word' then
