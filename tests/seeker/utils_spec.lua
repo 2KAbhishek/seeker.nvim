@@ -300,4 +300,39 @@ describe('seeker.utils', function()
             vim.api.nvim_buf_get_lines = orig_lines
         end)
     end)
+
+    describe('filter_excluded_paths', function()
+        it('should return empty list when all_paths is empty or nil', function()
+            assert.same({}, utils.filter_excluded_paths({}, { 'a.lua' }))
+            assert.same({}, utils.filter_excluded_paths(nil, { 'a.lua' }))
+        end)
+
+        it('should return all_paths when excluded_paths is empty or nil', function()
+            local paths = { 'a.lua', 'b.lua' }
+            assert.same(paths, utils.filter_excluded_paths(paths, {}))
+            assert.same(paths, utils.filter_excluded_paths(paths, nil))
+        end)
+
+        it('should exclude specified relative paths', function()
+            local all_paths = { 'src/main.lua', 'src/util.lua', 'package.json' }
+            local excluded = { 'package.json' }
+            local result = utils.filter_excluded_paths(all_paths, excluded)
+            assert.same({ 'src/main.lua', 'src/util.lua' }, result)
+        end)
+
+        it('should exclude specified absolute paths matching relative paths', function()
+            local cwd = '/test/project'
+            local all_paths = { 'src/main.lua', 'src/util.lua' }
+            local excluded = { '/test/project/src/main.lua' }
+            local result = utils.filter_excluded_paths(all_paths, excluded, cwd)
+            assert.same({ 'src/util.lua' }, result)
+        end)
+
+        it('should return empty list when all items are excluded', function()
+            local all_paths = { 'a.lua', 'b.lua' }
+            local excluded = { 'a.lua', 'b.lua' }
+            local result = utils.filter_excluded_paths(all_paths, excluded)
+            assert.same({}, result)
+        end)
+    end)
 end)

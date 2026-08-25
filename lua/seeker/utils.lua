@@ -180,4 +180,45 @@ M.get_picker_items = function(picker)
     return items or {}
 end
 
+---Filter out excluded paths from a list of paths
+---@param all_paths string[] All file paths
+---@param excluded_paths string[] File paths to exclude
+---@param cwd string? Current working directory (defaults to vim.fn.getcwd())
+---@return string[] Remaining file paths
+M.filter_excluded_paths = function(all_paths, excluded_paths, cwd)
+    if not all_paths or #all_paths == 0 then
+        return {}
+    end
+
+    if not excluded_paths or #excluded_paths == 0 then
+        return all_paths
+    end
+
+    cwd = cwd or vim.fn.getcwd()
+    local norm_excluded = M.normalize_paths(excluded_paths, cwd)
+    local excluded_set = {}
+    for _, path in ipairs(norm_excluded) do
+        excluded_set[path] = true
+    end
+    for _, path in ipairs(excluded_paths) do
+        excluded_set[path] = true
+    end
+
+    local remaining = {}
+    for _, path in ipairs(all_paths) do
+        local abs_path
+        if vim.fn.fnamemodify(path, ':p') == path then
+            abs_path = path
+        else
+            abs_path = vim.fn.fnamemodify(cwd .. '/' .. path, ':p')
+        end
+
+        if not excluded_set[path] and not excluded_set[abs_path] then
+            table.insert(remaining, path)
+        end
+    end
+
+    return remaining
+end
+
 return M

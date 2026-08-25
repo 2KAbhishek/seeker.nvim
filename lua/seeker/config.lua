@@ -4,11 +4,13 @@ local M = {}
 ---@class SeekerConfigOptions
 ---@field picker_provider string? Picker provider to use: 'snacks' or 'telescope' (default: 'snacks')
 ---@field toggle_key string? Key to toggle between file and grep mode (default: '<C-e>')
+---@field exclude_toggle_key string? Key to toggle between modes excluding selected files (default: '<C-x>')
 ---@field picker_opts table? Options passed to the picker provider
 ---@type SeekerConfigOptions
 local config = {
     picker_provider = 'snacks',
     toggle_key = '<C-e>',
+    exclude_toggle_key = '<C-x>',
     picker_opts = {},
 }
 

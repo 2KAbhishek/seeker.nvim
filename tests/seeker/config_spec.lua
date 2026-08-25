@@ -12,6 +12,10 @@ describe('seeker.config', function()
             assert.equals('<C-e>', config.config.toggle_key)
         end)
 
+        it('should have default exclude_toggle_key', function()
+            assert.equals('<C-x>', config.config.exclude_toggle_key)
+        end)
+
         it('should have default picker_opts', function()
             assert.is_table(config.config.picker_opts)
         end)
